@@ -1,0 +1,292 @@
+PARSER_BEGIN(FOLParser)
+
+package org.l4cs.fol.parse;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
+import org.l4cs.fol.syntax.FOLFormula;
+import org.l4cs.fol.syntax.FOLFormulaFactory;
+import org.l4cs.fol.syntax.Term;
+import org.l4cs.fol.syntax.TermFactory;
+import org.l4cs.fol.nd.FOLDerivationFactory;
+import org.l4cs.fol.nd.FOLDerivation;
+import org.l4cs.fol.nd.FOLSequent;
+import org.l4cs.fol.nd.FOLRule;
+import org.l4cs.fol.nd.FOLViolation;
+
+@SuppressWarnings("all")
+public class FOLParser {
+
+    FOLFormulaFactory fac;
+    TermFactory tfac;
+    FOLDerivationFactory df;
+    
+    // [CHANGE] Added support for explicitly tracking constants
+    Set<String> constants = new HashSet<String>();
+
+    public FOLParser(FOLFormulaFactory fac, FOLDerivationFactory df, java.io.Reader r) {
+      this(r);
+      this.fac = fac;
+      this.tfac = fac.termFactory();
+      this.df = df;
+    }
+
+    public FOLParser(FOLFormulaFactory fac, FOLDerivationFactory df, java.io.InputStream s) {
+      this(s);
+      this.fac = fac;
+      this.tfac = fac.termFactory();
+      this.df = df;
+    }
+}
+
+PARSER_END(FOLParser)
+
+SKIP: {
+    < "#" (~["\n","\r"])* ("\n" | "\r" | "\r\n") >
+  | " "
+  | "\t"
+  | "\n"
+  | "\r"
+  | "\u001B[0m"
+  | "\u001B[30m"
+  | "\u001B[31m"
+  | "\u001B[32m"
+  | "\u001B[33m"
+  | "\u001B[34m"
+  | "\u001B[35m"
+  | "\u001B[36m"
+  | "\u001B[37m"
+}
+
+TOKEN: {
+    // [CHANGE] Added keyword for constant declarations
+    < CONST_DECL: "const" >
+    /* Natural Deduction Rules for Propositional and First-Order Logic */
+  | < RULE_AX: "Ax" > 
+  | < RULE_RAA: "RAA" > 
+  | < RULE_IAND: "IAND" | "I&" | "I∧" >
+  | < RULE_EAND1: "EAND1" | "E&1" | "E∧1" > 
+  | < RULE_EAND2: "EAND2" | "E&2" | "E∧2" >
+  | < RULE_IOR1: "IOR1" | "I|" | "I∨1" | "I|1" > 
+  | < RULE_IOR2: "IOR2" | "I|2" | "I∨2" >
+  | < RULE_EOR: "EOR" | "E|" | "E∨" > 
+  | < RULE_IIMPLIES: "IIMPLIES" | "I->" | "I→" >
+  | < RULE_EIMPLIES: "EIMPLIES" | "E->" | "E→" > 
+  | < RULE_INOT: "INOT" | "I!" | "I¬" | "I~" >
+  | < RULE_ENOT: "ENOT" | "E!" | "E¬" | "E~" > 
+  | < RULE_IFORALL: "Iforall" | "IA" | "I∀" >
+  | < RULE_EFORALL: "Eforall" | "EA" | "E∀" > 
+  | < RULE_IEXISTS: "Iexists" | "IE" | "I∃" >
+  | < RULE_EEXISTS: "Eexists" | "EE" | "E∃" >
+}
+
+TOKEN: {
+    /* Quantifiers and Logical Constants */
+    < FORALL: "forall" | "∀" | "A" > 
+  | < EXISTS: "exists" | "∃" | "E" >
+  | < TRUE: "true" | "\u22A4" >
+  | < FALSE: "False" | "⊥" | "F" > 
+  
+    /* Connectives and Operators */
+  | < AND: "&" | "∧" | "AND" > 
+  | < OR: "|" | "∨" | "OR" >
+  | < IMPLIES: "->" | "→" | "IMPLIES" > 
+  | < IFF: "<->" | "↔" | "IFF" > 
+  | < NOT: "!" | "¬" | "~" | "NOT" >
+  
+    /* Structural Symbols */
+  | < INFERS: "|-" | "⊢" > 
+  | < LPAREN: "(" > 
+  | < RPAREN: ")" >
+  | < COMMA: "," > 
+  | < DOT: "." > 
+  | < NUMBER: (["0"-"9"])+ >
+  | < IDENTIFIER: (["a"-"z","A"-"Z","_"]) (["a"-"z","A"-"Z","0"-"9","_"])* >
+}
+
+FOLFormula FormulaOnly() :
+{ FOLFormula f; }
+{ f = Formula() <EOF> { return f; } }
+
+FOLDerivation Derivation() throws FOLViolation :
+{
+  Map<Integer,FOLDerivation> dmap = new HashMap<>();
+  FOLDerivation last = null;
+  int label;
+  FOLSequent s;
+  FOLRule r;
+  ArrayList<Integer> premList;
+  Token c;
+}
+{
+  ( <CONST_DECL> c=<IDENTIFIER> { constants.add(c.image); } 
+    ( <COMMA> c=<IDENTIFIER> { constants.add(c.image); } )* ";" 
+  )?
+  (
+    label=Number() <DOT> s=Sequent()
+    <LPAREN> r=Rule() <RPAREN> premList=NumberList() "."
+    {
+      if (dmap.containsKey(label))
+        throw new ParseException("Error: two steps are numbered "+label);
+      int n = premList.size(), count = 0;
+      FOLDerivation[] subDerivations = new FOLDerivation[n];
+      for (int i: premList) {
+        FOLDerivation subder = dmap.get(i);
+        if (subder == null)
+          throw new ParseException("Error at step "+label+
+            ": no preceding line labeled "+i);
+        subDerivations[count++] = subder;
+      }
+      try {
+        last = df.derivation(r, s, subDerivations);
+        dmap.put(label, last);
+      } catch (FOLViolation v) {
+        v.setLocation("step "+label);
+	throw v;
+      }
+    }
+  )*
+  <EOF>
+  {
+    if (dmap.isEmpty()) throw new ParseException("Error: derivation is empty");
+    return last;
+  }
+}
+
+FOLRule Rule() :
+{}
+{
+    <RULE_AX> { return df.ax(); }
+  | <RULE_RAA> { return df.raa(); }
+  | <RULE_INOT> { return df.introNot(); }
+  | <RULE_ENOT> { return df.elimNot(); }
+  | <RULE_IAND> { return df.introAnd(); }
+  | <RULE_EAND1> { return df.elimAnd1(); }
+  | <RULE_EAND2> { return df.elimAnd2(); }
+  | <RULE_IOR1> { return df.introOr1(); }
+  | <RULE_IOR2> { return df.introOr2(); }
+  | <RULE_EOR> { return df.elimOr(); }
+  | <RULE_IIMPLIES> { return df.introImplies(); }
+  | <RULE_EIMPLIES> { return df.elimImplies(); }
+  | <RULE_IFORALL> { return df.introForall(); }
+  | <RULE_EFORALL> { return df.elimForall(); }
+  | <RULE_IEXISTS> { return df.introExists(); }
+  | <RULE_EEXISTS> { return df.elimExists(); }
+}
+
+ArrayList<Integer> NumberList() :
+{ ArrayList<Integer> result = new ArrayList<>(); int n; }
+{
+  ( n=Number() { result.add(n); } ( <COMMA> n=Number() { result.add(n); } )* )?
+  { return result; }
+}
+
+int Number() :
+{ Token num; }
+{
+  num = <NUMBER> { return Integer.parseUnsignedInt(num.image); }
+}
+
+FOLSequent Sequent() :
+{ Set<FOLFormula> antecedent; FOLFormula succedent; }
+{
+  antecedent = FormulaSet() <INFERS> succedent = Formula()
+  { return df.sequent(antecedent, succedent); }
+}
+
+Set<FOLFormula> FormulaSet() :
+{ Set<FOLFormula> set = new HashSet<FOLFormula>(); FOLFormula f; }
+{
+  ( f = Formula() { set.add(f); } ( <COMMA> f = Formula() { set.add(f); } )* )?
+  { return set; }
+}
+
+FOLFormula Formula() : { FOLFormula f; } { f = QuantifiedFormula() { return f; } }
+
+// Quantifiers have the widest scope.
+FOLFormula QuantifiedFormula() :
+{ FOLFormula f; Token v; }
+{
+    LOOKAHEAD(3) <FORALL> v=<IDENTIFIER> <DOT> f=QuantifiedFormula() { return fac.forall(f, tfac.variable(v.image)); }
+  | LOOKAHEAD(3) <EXISTS> v=<IDENTIFIER> <DOT> f=QuantifiedFormula() { return fac.exists(f, tfac.variable(v.image)); }
+  | f=BiImplication() { return f; }
+}
+
+// [CHANGE] Added LOOKAHEAD to binary connectives to resolve choice conflicts with QuantifiedFormula recursion
+FOLFormula BiImplication() :
+{ FOLFormula f,g; }
+{
+  f=Implication() [ LOOKAHEAD(2) <IFF> g = QuantifiedFormula() { f = fac.iff(f, g); } ]
+  { return f; }
+}
+
+FOLFormula Implication() :
+{ FOLFormula f,g; }
+{
+  f=Disjunction() [ LOOKAHEAD(2) <IMPLIES> g = QuantifiedFormula() { f = fac.implies(f, g); } ]
+  { return f; }
+}
+
+FOLFormula Disjunction() :
+{ FOLFormula f,g; }
+{
+    f=Conjunction() [ LOOKAHEAD(2) <OR> g = QuantifiedFormula() { f = fac.or(f, g); } ]
+    { return f; }
+}
+
+FOLFormula Conjunction() :
+{ FOLFormula f,g; }
+{
+    f=Negation() [ LOOKAHEAD(2) <AND> g = QuantifiedFormula() { f = fac.and(f, g); } ]
+    { return f; }
+}
+
+// Negation allows !forall x. P
+FOLFormula Negation() :
+{ FOLFormula f; Token v; }
+{
+    <NOT> f=Negation() { return fac.not(f); }
+  | LOOKAHEAD(3) <FORALL> v=<IDENTIFIER> <DOT> f=QuantifiedFormula() { return fac.forall(f, tfac.variable(v.image)); }
+  | LOOKAHEAD(3) <EXISTS> v=<IDENTIFIER> <DOT> f=QuantifiedFormula() { return fac.exists(f, tfac.variable(v.image)); }
+  | f=Primary() { return f; }
+}
+
+FOLFormula Primary() :
+{ Token t; FOLFormula f; ArrayList<Term> args = null; }
+{
+    <LPAREN> f=Formula() <RPAREN> { return f; }
+  |
+    <TRUE>
+    { return fac.trueFormula(); }
+  | <FALSE> { return fac.falseFormula(); }
+  
+    // [CHANGE] 0-arity predicates MUST look like P(). TermList is no longer optional.
+  | t=<IDENTIFIER> args = TermList()
+    {
+      return fac.predicateApplication(fac.predicateSymbol(t.image, args.size()), 
+             args.toArray(new Term[0]));
+    }
+}
+
+ArrayList<Term> TermList() :
+{ ArrayList<Term> terms = new ArrayList<>(); Term t; }
+{
+    <LPAREN> ( t=Term() { terms.add(t); } ( <COMMA> t=Term() { terms.add(t); } )* )? <RPAREN>
+    { return terms; }
+}
+
+Term Term() :
+{ Token t; ArrayList<Term> args = null; }
+{
+    LOOKAHEAD(<IDENTIFIER> <LPAREN>) t=<IDENTIFIER> args = TermList()
+    {
+        return tfac.functionApplication(tfac.functionSymbol(t.image, args.size()), args.toArray(new Term[0]));
+    }
+  | t=<IDENTIFIER>
+    {
+      if (constants.contains(t.image)) return tfac.constant(t.image);
+      return tfac.variable(t.image);
+    }
+}

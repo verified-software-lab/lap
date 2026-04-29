@@ -1,0 +1,6 @@
+1.   p|q |- p|q (Ax).     
+2. p|q,p |- p   (Ax).     
+3. p|q,p |- q|p (IOR1)2.     # erroneous application of IOR1!
+4. p|q,q |- q   (Ax).     
+5. p|q,q |- q|p (IOR1)4.   
+6.   p|q |- q|p (EOR)1,3,5.

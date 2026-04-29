@@ -1,0 +1,6 @@
+const a;
+1. ∀x. (P(x) -> Q(x)), P(a) ⊢ P(a) (Ax).
+2. ∀x. (P(x) -> Q(x)), P(a) ⊢ ∀x. (P(x) -> Q(x)) (Ax).
+3. ∀x. (P(x) -> Q(x)), P(a) ⊢ P(a) -> Q(a) (E∀)2.
+4. ∀x. (P(x) -> Q(x)), P(a) ⊢ Q(a) (E->)1,3.
+5. ∀x. (P(x) -> Q(x)), P(a) ⊢ ∀x. Q(x) (I∀)4.

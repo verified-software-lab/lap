@@ -1,0 +1,286 @@
+PARSER_BEGIN(PLParser)
+
+package org.l4cs.pl.parse;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
+import org.l4cs.pl.syntax.Formula;
+import org.l4cs.pl.syntax.FormulaFactory;
+import org.l4cs.pl.syntax.Proposition;
+import org.l4cs.pl.nd.DerivationFactory;
+import org.l4cs.pl.nd.Derivation;
+import org.l4cs.pl.nd.Sequent;
+import org.l4cs.pl.nd.Rule;
+import org.l4cs.pl.nd.Violation;
+
+@SuppressWarnings("all")
+public class PLParser {
+
+    FormulaFactory fac;
+    DerivationFactory df;
+
+    public PLParser(FormulaFactory fac, DerivationFactory df, java.io.Reader r) {
+      this(r);
+      this.fac = fac;
+      this.df = df;
+    }
+
+    public PLParser(FormulaFactory fac, DerivationFactory df, java.io.InputStream s) {
+      this(s);
+      this.fac = fac;
+      this.df = df;
+    }
+}
+
+PARSER_END(PLParser)
+
+SKIP: {
+    < "#" (~["\n","\r"])* ("\n" | "\r" | "\r\n") >
+  | " "
+  | "\t"
+  | "\n"
+  | "\r"
+  | "\u001B[0m"
+  | "\u001B[30m"
+  | "\u001B[31m"
+  | "\u001B[32m"
+  | "\u001B[33m"
+  | "\u001B[34m"
+  | "\u001B[35m"
+  | "\u001B[36m"
+  | "\u001B[37m"
+}
+
+TOKEN: {
+    < TRUE: "true" | "\u22A4" >
+|   < FALSE: "false" | "\u22A5" >
+|   < INFERS: "|-" | "\u22A2" >
+|   < IFF: "IFF" | "<->" | "\u2194" >
+|   < IMPLIES: "IMPLIES" | "->" | "\u2192" >
+|   < AND: "AND" | "&" | "&&" | "\u2227" >
+|   < OR: "OR" | "|" | "||" | "\u2228" >
+|   < NOT: "NOT" | "!" | "\u00AC" >
+|   < LPAREN: "(" >
+|   < RPAREN: ")" >
+|   < NUMBER: ["0"-"9"] ( ["0"-"9"] )* >
+|   < COMMA: "," >
+|   < DOT: "." >
+|   < SEMI: ";" >
+|   < Ax: "Ax" >
+|   < RAA: "RAA" >
+|   < INOT: "INOT" | "I\u00AC" | "I!" >
+|   < ENOT: "ENOT"  | "E\u00AC" | "E!" >
+|   < IAND: "IAND" | "I\u2227" | "I&" | "I&&" >
+|   < EAND1: "EAND1" | "E\u22271" | "E&1" | "E&&1" >
+|   < EAND2: "EAND2" | "E\u22272" | "E&2" | "E&&2" >
+|   < IOR1: "IOR1" | "I\u22281" | "I|1" | "I||1" >
+|   < IOR2: "IOR2" | "I\u22282" | "I|2" | "I||2" >
+|   < EOR: "EOR" | "E\u2228" | "E|" | "E||" >
+|   < IIMPLIES: "IIMPLIES" | "I\u2192" | "I->" >
+|   < EIMPLIES: "EIMPLIES" | "E\u2192" | "E->" >
+|   < VARIABLE: ["a"-"z","A"-"Z","_"] ( ["a"-"z","A"-"Z","0"-"9","_"] )* >
+|   < END: "<END>" >
+}
+
+Derivation Derivation() throws Violation :
+{
+  Map<Integer,Derivation> dmap = new HashMap<>();
+  Derivation last = null;
+  int label;
+  Sequent s;
+  Rule r;
+  ArrayList<Integer> premList;
+}
+{
+  (
+    label=Number() <DOT> s=Sequent()
+    <LPAREN> r=Rule() <RPAREN> premList=NumberList() <DOT>
+    {
+      if (dmap.containsKey(label))
+        throw new ParseException("Error: two steps are numbered "+label);
+      int n = premList.size(), count = 0;
+      Derivation[] subDerivations = new Derivation[n];
+      for (int i: premList) {
+        Derivation subder = dmap.get(i);
+        if (subder == null)
+          throw new ParseException("Error at step "+label+
+            ": no preceding line labeled "+i);
+        subDerivations[count++] = subder;
+      }
+      try {
+        last = df.derivation(r, s, subDerivations);
+        dmap.put(label, last);
+      } catch (Violation v) {
+        v.setLocation("step "+label);
+	throw v;
+      }
+    }
+  )*
+  <EOF>
+  {
+    // check that there is at least one step
+    if (dmap.isEmpty())
+      throw new ParseException("Error: derivation is empty");
+    // check all steps are reachable from root (last step)
+    Set<Derivation> reached = last.reachableDerivations();
+    int size1 = reached.size(), size2 = dmap.size();
+    assert size1 <= size2;
+    if (size1 < size2) {
+      for (Map.Entry<Integer,Derivation> entry: dmap.entrySet()) {
+        Derivation d = entry.getValue();
+        if (!reached.contains(d))
+	  throw new ParseException
+	    ("Error: step "+entry.getKey()+" is unreachable");
+      }
+      assert false;
+    }
+    return last;
+  }
+}
+
+Rule Rule() :
+{}
+{
+    <Ax> { return df.ax(); }
+  | <RAA> { return df.raa(); }
+  | <INOT> { return df.introNot(); }
+  | <ENOT> { return df.elimNot(); }
+  | <IAND> { return df.introAnd(); }
+  | <EAND1> { return df.elimAnd1(); }
+  | <EAND2> { return df.elimAnd2(); }
+  | <IOR1> { return df.introOr1(); }
+  | <IOR2> { return df.introOr2(); }
+  | <EOR> { return df.elimOr(); }
+  | <IIMPLIES> { return df.introImplies(); }
+  | <EIMPLIES> { return df.elimImplies(); }
+}
+
+ArrayList<Integer> NumberList() :
+{
+  ArrayList<Integer> result = new ArrayList<>();
+  int n;
+}
+{
+  ( n=Number() { result.add(n); }
+    ( <COMMA> n=Number() { result.add(n); } )*
+  )?
+  { return result; }
+}
+
+int Number() :
+{ Token num; }
+{
+  num = <NUMBER>
+  { return Integer.parseUnsignedInt(num.image); }
+}
+
+
+Sequent Sequent() :
+{
+  Set<Formula> antecedent;
+  Formula succedent;
+}
+{
+  antecedent = FormulaSet() <INFERS> succedent = Formula()
+  { return df.sequent(antecedent, succedent); }
+}
+
+Set<Formula> FormulaSet() :
+{
+  Set<Formula> set = new HashSet<Formula>();
+  Formula f;
+}
+{
+  ( f = Formula() { set.add(f); }
+    ( "," f = Formula() { set.add(f); } )* )?
+  { return set; }
+}
+
+Formula FormulaOnly() :
+{
+  Formula f;
+}
+{ 
+  f = Formula() ( <END> | <EOF> ) { return f; }
+}
+
+Formula Formula() :
+{
+  Formula f;
+}
+{
+   f = BiImplication() { return f; }
+}
+
+
+Formula BiImplication() :
+{
+  Formula f,g;
+}
+{
+  f=Implication()
+  ( <IFF> g = BiImplication() { f = fac.iff(f, g); } )?
+  { return f; }
+}
+
+Formula Implication() :
+{
+  Formula f,g;
+}
+{
+  f=Disjunction()
+  ( <IMPLIES> g = Implication() { f = fac.implies(f, g); } )?
+  { return f; }
+}
+
+Formula Disjunction() :
+{
+  Formula f,g;
+}
+{
+    f=Conjunction()
+    ( <OR> g = Disjunction() { f = fac.or(f, g); } )?
+    { return f; }
+}
+
+Formula Conjunction() :
+{
+  Formula f,g;
+}
+{
+    f=Negation()
+    ( <AND> g=Conjunction() { f = fac.and(f, g); } )?
+    { return f; }
+}
+
+Formula Negation() :
+{
+  Formula f;
+}
+{
+    (
+      <NOT> f=Negation() { return fac.not(f); }
+    | f=Primary() { return f; }
+    )
+}
+
+Formula Primary() :
+{
+  Token t;
+  Formula f;
+}
+{
+    <LPAREN> f=Formula() <RPAREN>
+    { return f; }
+|
+    <TRUE>
+    { return fac.trueFormula(); }
+|
+    <FALSE>
+    { return fac.falseFormula(); }
+|
+    t=<VARIABLE>
+    { return fac.proposition(t.image); }
+}
