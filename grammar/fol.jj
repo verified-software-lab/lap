@@ -21,9 +21,7 @@ public class FOLParser {
 
     FOLFormulaFactory fac;
     TermFactory tfac;
-    FOLDerivationFactory df;
-    
-    // [CHANGE] Added support for explicitly tracking constants
+    FOLDerivationFactory df;    
     Set<String> constants = new HashSet<String>();
 
     public FOLParser(FOLFormulaFactory fac, FOLDerivationFactory df, java.io.Reader r) {
@@ -84,14 +82,14 @@ TOKEN: {
 
 TOKEN: {
     /* Quantifiers and Logical Constants */
-    < FORALL: "forall" | "∀" | "A" > 
-  | < EXISTS: "exists" | "∃" | "E" >
-  | < TRUE: "true" | "\u22A4" >
-  | < FALSE: "False" | "⊥" | "F" > 
+    < FORALL: "forall" | "∀" > 
+  | < EXISTS: "exists" | "∃" >
+  | < TRUE: "true" | "⊤" >
+  | < FALSE: "false" | "⊥" > 
   
     /* Connectives and Operators */
-  | < AND: "&" | "∧" | "AND" > 
-  | < OR: "|" | "∨" | "OR" >
+  | < AND: "&" | "&&" | "∧" | "AND" > 
+  | < OR: "|" | "||" | "∨" | "OR" >
   | < IMPLIES: "->" | "→" | "IMPLIES" > 
   | < IFF: "<->" | "↔" | "IFF" > 
   | < NOT: "!" | "¬" | "~" | "NOT" >
@@ -205,16 +203,17 @@ Set<FOLFormula> FormulaSet() :
 
 FOLFormula Formula() : { FOLFormula f; } { f = QuantifiedFormula() { return f; } }
 
-// Quantifiers have the widest scope.
 FOLFormula QuantifiedFormula() :
 { FOLFormula f; Token v; }
 {
-    LOOKAHEAD(3) <FORALL> v=<IDENTIFIER> <DOT> f=QuantifiedFormula() { return fac.forall(f, tfac.variable(v.image)); }
-  | LOOKAHEAD(3) <EXISTS> v=<IDENTIFIER> <DOT> f=QuantifiedFormula() { return fac.exists(f, tfac.variable(v.image)); }
-  | f=BiImplication() { return f; }
+    LOOKAHEAD(3) <FORALL> v=<IDENTIFIER> <DOT> f=QuantifiedFormula()
+      { return fac.forall(f, tfac.variable(v.image)); }
+  | LOOKAHEAD(3) <EXISTS> v=<IDENTIFIER> <DOT> f=QuantifiedFormula()
+      { return fac.exists(f, tfac.variable(v.image)); }
+  | f=BiImplication()
+      { return f; }
 }
 
-// [CHANGE] Added LOOKAHEAD to binary connectives to resolve choice conflicts with QuantifiedFormula recursion
 FOLFormula BiImplication() :
 { FOLFormula f,g; }
 {
@@ -243,26 +242,24 @@ FOLFormula Conjunction() :
     { return f; }
 }
 
-// Negation allows !forall x. P
 FOLFormula Negation() :
 { FOLFormula f; Token v; }
 {
     <NOT> f=Negation() { return fac.not(f); }
-  | LOOKAHEAD(3) <FORALL> v=<IDENTIFIER> <DOT> f=QuantifiedFormula() { return fac.forall(f, tfac.variable(v.image)); }
-  | LOOKAHEAD(3) <EXISTS> v=<IDENTIFIER> <DOT> f=QuantifiedFormula() { return fac.exists(f, tfac.variable(v.image)); }
-  | f=Primary() { return f; }
+  | LOOKAHEAD(3) <FORALL> v=<IDENTIFIER> <DOT> f=QuantifiedFormula()
+      { return fac.forall(f, tfac.variable(v.image)); }
+  | LOOKAHEAD(3) <EXISTS> v=<IDENTIFIER> <DOT> f=QuantifiedFormula()
+      { return fac.exists(f, tfac.variable(v.image)); }
+  | f=Primary()
+      { return f; }
 }
 
 FOLFormula Primary() :
 { Token t; FOLFormula f; ArrayList<Term> args = null; }
 {
     <LPAREN> f=Formula() <RPAREN> { return f; }
-  |
-    <TRUE>
-    { return fac.trueFormula(); }
+  | <TRUE>  { return fac.trueFormula(); }
   | <FALSE> { return fac.falseFormula(); }
-  
-    // [CHANGE] 0-arity predicates MUST look like P(). TermList is no longer optional.
   | t=<IDENTIFIER> args = TermList()
     {
       return fac.predicateApplication(fac.predicateSymbol(t.image, args.size()), 
@@ -273,7 +270,9 @@ FOLFormula Primary() :
 ArrayList<Term> TermList() :
 { ArrayList<Term> terms = new ArrayList<>(); Term t; }
 {
-    <LPAREN> ( t=Term() { terms.add(t); } ( <COMMA> t=Term() { terms.add(t); } )* )? <RPAREN>
+    <LPAREN>
+    ( t=Term() { terms.add(t); } ( <COMMA> t=Term() { terms.add(t); } )* )?
+    <RPAREN>
     { return terms; }
 }
 
@@ -282,7 +281,8 @@ Term Term() :
 {
     LOOKAHEAD(<IDENTIFIER> <LPAREN>) t=<IDENTIFIER> args = TermList()
     {
-        return tfac.functionApplication(tfac.functionSymbol(t.image, args.size()), args.toArray(new Term[0]));
+        return tfac.functionApplication(tfac.functionSymbol(t.image, args.size()),
+                                        args.toArray(new Term[0]));
     }
   | t=<IDENTIFIER>
     {
