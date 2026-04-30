@@ -95,4 +95,4 @@ and see if you get the help message.
 
 ## Authors
 - Stephen Siegel
-- Yuxin Zhang
+- Yuxin Zhou
