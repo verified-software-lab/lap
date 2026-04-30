@@ -47,7 +47,11 @@
 	<target name="build" depends="compile" />
 
 	<target name="jar" depends="build">
-		<jar destfile="lap.jar" basedir="bin" />
+	  <jar destfile="lap.jar" basedir="bin">
+	    <manifest>
+              <attribute name="Main-Class" value="LAP" />
+	    </manifest>
+	  </jar>
 	</target>
 
 	<target name="test" depends="build">
