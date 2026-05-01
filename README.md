@@ -13,6 +13,9 @@ formats.  The toolset is written in Java and has no dependencies
 other than a Java Virtual Machine.  The code has been designed to be
 easy to read and to illuminate the data definitions and algorithms.
 
+**Note:** the command line interface has changed since v1.0.0.  See
+[the version of this README for the earlier interface](https://github.com/verified-software-lab/lap/blob/7322b135eb45a046fbad0ae8ca3b595998a0e85f/README.md).
+
 ## Examples
 
 Find a satisfying model for a propositional formula by brute force:
