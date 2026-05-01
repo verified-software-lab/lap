@@ -173,7 +173,6 @@ true
 5. │ │ │ ⊥        (E¬)2,4
 6. │ │ ⊥          (E∃)1,5
 7. │ ¬∃x.P(x)     (I¬)6  
-
                                                                                                                                    
                                                                                             (Ax) ──────────────────────────────────
                                                                                                  ③ P(y),∀x.¬P(x),∃x.P(x) ⊢ ∀x.¬P(x)
@@ -185,10 +184,16 @@ true
                                                            ⑥ ∀x.¬P(x),∃x.P(x) ⊢ ⊥
 (I¬) ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
                                                          ⑦ ∀x.¬P(x) ⊢ ¬∃x.P(x)
-siegel@giacomo fol %
+
 ```
+
 What happens when you try to check an incorrect derivation?
 ```
+siegel@giacomo fol % cat badEexists1.lap   
+1. ∃x. P(x) ⊢ ∃x. P(x) (Ax).
+2. ∃x. P(x), P(y) ⊢ P(y) (Ax).
+3. ∃x. P(x) ⊢ P(y) (E∃)1,2.
+
 siegel@giacomo fol % lap check -v -lang fol badEexists1.lap 
 false
 Violation of rule E∃ at step 3:
@@ -206,10 +211,6 @@ Side condition 1: y must not occur free in Γ, φ, or θ;
 Side condition 2: y must be free for x in φ.
 siegel@giacomo fol % 
 ```
-
-
-
-
 
 ## Install
 
