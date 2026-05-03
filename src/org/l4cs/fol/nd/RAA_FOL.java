@@ -46,13 +46,13 @@ public class RAA_FOL extends FOLRule {
 		String s1 = GAMMA + "," + NOT + "A " + TextUtil.infers() + " " + BOT;
 		String s2 = GAMMA + " " + TextUtil.infers() + " A";
 		TextUtil.printFrac(out, 5, s1, s2);
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("Rule RAA says that if you start in some context ");
 		buf.append(GAMMA + ", and assume " + NOT + "A, ");
 		buf.append("and from there you derive " + BOT + ", ");
 		buf.append("then it must be the case that A holds in ");
 		buf.append(GAMMA + ". The rule has one premise.");
-		out.print(TextUtil.fill(buf, DEFAULT_WIDTH));
+		out.print(TextUtil.wrap(buf));
 	}
 
 	@Override

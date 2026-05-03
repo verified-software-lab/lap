@@ -56,10 +56,10 @@ public class ElimNot extends Rule {
 		String s1 = GAMMA + " " + TextUtil.infers() + " A     " + GAMMA + " " + TextUtil.infers() + " " + NOT + "A";
 		String s2 = GAMMA + " " + TextUtil.infers() + " B";
 		TextUtil.printFrac(out, 5, s1, s2);
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("Rule " + this + " says that if in some context " + GAMMA + ", you can dervive both A and " + NOT
 				+ "A, then you can derive anything in " + GAMMA + ".");
-		out.print(TextUtil.fill(buf, DEFAULT_WIDTH));
+		out.print(TextUtil.wrap(buf));
 	}
 
 	@Override

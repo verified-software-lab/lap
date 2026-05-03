@@ -57,12 +57,12 @@ public class ElimImplies_FOL extends FOLRule {
 				+ "B";
 		String s2 = GAMMA + " " + TextUtil.infers() + " B";
 		TextUtil.printFrac(out, 5, s1, s2);
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append(
 				"Rule " + this + " says that if you know A" + IMPLIES + "B, and you know A, then you can conclude B. "
 						+ "All premises and the conclusion use the same context " + GAMMA + ". ");
 		buf.append("This rule has two premises.");
-		out.print(TextUtil.fill(buf, DEFAULT_WIDTH));
+		out.print(TextUtil.wrap(buf));
 	}
 
 	@Override

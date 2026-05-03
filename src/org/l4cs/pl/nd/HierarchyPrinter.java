@@ -43,10 +43,10 @@ public class HierarchyPrinter {
 			int numPadding = numDigits - Integer.toString(num).length();
 			for (int i = 0; i < numPadding; i++)
 				out.print(" ");
-			out.print(TextUtil.blue() + num + ". " + TextUtil.reset());
+			out.print(TextUtil.blueOn() + num + ". " + TextUtil.colorOff());
 		}
-		out.print(TextUtil.blue() + pretext + TextUtil.reset());
-		out.println(d.conclusion + TextUtil.ruleColor() + "  (" + d.rule + ")" + TextUtil.reset());
+		out.print(TextUtil.blueOn() + pretext + TextUtil.colorOff());
+		out.println(d.conclusion + TextUtil.ruleColorOn() + "  (" + d.rule + ")" + TextUtil.colorOff());
 		for (int i = 0; i < d.subderivations.length; i++) {
 			printHierarchyAux(d.subderivations[i], pretext + TextUtil.getVLine(), stepNums);
 		}

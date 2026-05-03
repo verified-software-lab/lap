@@ -44,8 +44,8 @@ public class TreePrinter {
 		String ruleStr = "(" + d.rule.toString() + ") ";
 		int pureConclLen = pureConcl.length();
 		int ruleLen = ruleStr.length();
-		String coloredRule = TextUtil.ruleColor() + "(" + d.rule.toString() + ")" + TextUtil.reset() + " ";
-		String coloredConcl = TextUtil.blue() + marker + TextUtil.reset() + " " + d.conclusion.toString();
+		String coloredRule = TextUtil.ruleColorOn() + "(" + d.rule.toString() + ")" + TextUtil.colorOff() + " ";
+		String coloredConcl = TextUtil.blueOn() + marker + TextUtil.colorOff() + " " + d.conclusion.toString();
 
 		if (d.subderivations.length == 0) {
 			int barWidth = Math.max(pureConclLen, 6);

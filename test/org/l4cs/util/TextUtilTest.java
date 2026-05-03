@@ -10,10 +10,10 @@ public class TextUtilTest {
 
 	@Test
 	public void test() {
-		StringBuffer in = new StringBuffer("abc defg hijkl.  mnopqr stuvwxyz.");
+		StringBuilder in = new StringBuilder("abc defg hijkl.  mnopqr stuvwxyz.");
 		for (int i = 1; i <= in.length(); i++) {
 			out.println("--------------- wrap=" + i + " ---------------");
-			StringBuffer result = TextUtil.fill(in, i);
+			StringBuilder result = TextUtil.wrap(in, 0, i);
 			out.println(result);
 			out.println();
 		}

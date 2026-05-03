@@ -22,11 +22,11 @@ public class TuplePrinter {
 		out.print("(");
 		if (number) {
 			int num = stepNums.get(d);
-			out.print(TextUtil.blue() + TextUtil.getCircled(num) + TextUtil.reset() + " ");
+			out.print(TextUtil.blueOn() + TextUtil.getCircled(num) + TextUtil.colorOff() + " ");
 		}
 		out.print(d.conclusion);
 		out.print(", ");
-		out.print(TextUtil.ruleColor() + d.rule + TextUtil.reset());
+		out.print(TextUtil.ruleColorOn() + d.rule + TextUtil.colorOff());
 		out.print(", (");
 		boolean first = true;
 		for (FOLDerivation sub : d.subderivations) {

@@ -47,12 +47,12 @@ public class Ax extends Rule {
 		String s1 = "";
 		String s2 = GAMMA + "," + "A " + TextUtil.infers() + " A";
 		TextUtil.printFrac(out, 5, s1, s2);
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("Rule Ax says that at any time, you may conclude any "
 				+ "formula that is currently being assumed to hold. ");
 		buf.append("The Ax rule has no premises and holds whenever the "
 				+ "conclusion's succedent belongs to the set of formulas " + "which form the conclusion's antecedent.");
-		out.print(TextUtil.fill(buf, DEFAULT_WIDTH));
+		out.print(TextUtil.wrap(buf));
 		out.println();
 	}
 

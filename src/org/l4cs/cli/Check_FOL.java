@@ -58,7 +58,7 @@ public class Check_FOL {
 		out.println("  this can be changed to read from stdin or to specify the ");
 		out.println("  derivation on the command line.  Output is sent to stdout.");
 		out.println("Options:");
-		out.println("  -in     : read formula from stdin");
+		out.println("  -i --in : read formula from stdin");
 		out.println("  -f <string>");
 		out.println("          : read the derivation from <string> instead of a file");
 		out.println("  -v      : verbose output");

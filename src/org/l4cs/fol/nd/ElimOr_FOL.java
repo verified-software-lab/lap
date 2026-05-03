@@ -67,12 +67,12 @@ public class ElimOr_FOL extends FOLRule {
 				+ " C     " + GAMMA + ",B " + TextUtil.infers() + " C";
 		String s2 = GAMMA + " " + TextUtil.infers() + " C";
 		TextUtil.printFrac(out, 5, s1, s2);
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("Rule " + this + " says that if in some context " + GAMMA + ": (1) you can derive A" + OR + "B, "
 				+ "(2) if you assume A, you can derive C, and " + "(3) if you assume B, you can derive C, "
 				+ "then you can conclude that C holds in " + GAMMA + ". ");
 		buf.append("This rule has three premises.");
-		out.print(TextUtil.fill(buf, DEFAULT_WIDTH));
+		out.print(TextUtil.wrap(buf));
 	}
 
 	@Override

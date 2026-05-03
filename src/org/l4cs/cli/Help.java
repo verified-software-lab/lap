@@ -83,7 +83,7 @@ public class Help {
 		out.println("Connectives and primitives can be represented in multiple ways:");
 		out.println("  - FORALL  : FORALL forall \u2200");
 		out.println("  - EXISTS  : EXISTS exists \u2203");
-		//out.println("  - EQUALS  : =");
+		// out.println(" - EQUALS : =");
 		out.println("  - NOT     : NOT ! " + TextUtil.NOT);
 		out.println("  - AND     : AND & &&" + TextUtil.AND);
 		out.println("  - OR      : OR | ||" + TextUtil.OR);
@@ -132,7 +132,7 @@ public class Help {
 	}
 
 	private static void derivations_FOL(CommandLine cl) {
-		// ADDED: FOL derivation syntax mirroring the PL counterpart. 
+		// ADDED: FOL derivation syntax mirroring the PL counterpart.
 		out.println("FOL Derivation syntax: ");
 		out.println();
 		out.println("The sequent symbol is denoted |- or ⊢");
@@ -207,7 +207,7 @@ public class Help {
 			Valid.describe(cl);
 			break;
 		case "check":
-			Check_PL.describe(cl);
+			new Check_PL().man(out);
 			break;
 		case "formulas":
 			formulas_PL(cl);

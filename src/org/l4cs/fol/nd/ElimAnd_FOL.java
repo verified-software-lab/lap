@@ -59,7 +59,7 @@ public class ElimAnd_FOL extends FOLRule {
 		String s1 = GAMMA + " " + TextUtil.infers() + " A" + AND + "B";
 		String s2 = GAMMA + " " + TextUtil.infers() + " " + (i == 1 ? "A" : "B");
 		TextUtil.printFrac(out, 5, s1, s2);
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("Rule " + this + " says that if you can derive A" + AND + "B, then you can conclude "
 				+ (i == 1 ? "A" : "B") + ". " + "The premise and the conclusion use the same context " + GAMMA + ". ");
 		buf.append("This rule has one premise.");

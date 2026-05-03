@@ -38,7 +38,6 @@ public abstract class Rule {
 	 * these elements in their description.
 	 */
 
-	final static int DEFAULT_WIDTH = TextUtil.DEFAULT_WIDTH;
 	final static String GAMMA = TextUtil.GAMMA;
 	// final static String INFERS = TextUtil.INFERS;
 	final static String AND = TextUtil.AND;
@@ -47,6 +46,7 @@ public abstract class Rule {
 	final static String NOT = TextUtil.NOT;
 	final static String TOP = TextUtil.TOP;
 	final static String BOT = TextUtil.BOT;
+	final static int terminalWidth = TextUtil.terminalWidth();
 
 	/**
 	 * The factory used to extract information and create and manipulate formulas.
@@ -72,11 +72,11 @@ public abstract class Rule {
 	}
 
 	protected static String fill(String s) {
-		return TextUtil.fill(s, DEFAULT_WIDTH).toString();
+		return TextUtil.wrap(s).toString();
 	}
 
-	protected static String fill(StringBuffer s) {
-		return TextUtil.fill(s, DEFAULT_WIDTH).toString();
+	protected static String fill(StringBuilder s) {
+		return TextUtil.wrap(s).toString();
 	}
 
 	protected Violation violation(Sequent conclusion, Sequent[] premises, String explanation) {

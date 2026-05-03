@@ -55,11 +55,11 @@ public class IntroAnd extends Rule {
 		String s1 = GAMMA + " " + TextUtil.infers() + " A     " + GAMMA + " " + TextUtil.infers() + " B";
 		String s2 = GAMMA + " " + TextUtil.infers() + " A" + AND + "B";
 		TextUtil.printFrac(out, 5, s1, s2);
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("Rule " + this + " says that if you know A, and " + "you know B, then you can conclude A" + AND
 				+ "B. " + "All premises and the conclusion use the same context " + GAMMA + ". ");
 		buf.append("This rule has two premises.");
-		out.print(TextUtil.fill(buf, DEFAULT_WIDTH));
+		out.print(TextUtil.wrap(buf));
 	}
 
 	@Override

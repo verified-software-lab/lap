@@ -57,13 +57,13 @@ public class IntroImplies extends Rule {
 		String s1 = GAMMA + "," + "A " + TextUtil.infers() + " B";
 		String s2 = GAMMA + " " + TextUtil.infers() + " A" + IMPLIES + "B";
 		TextUtil.printFrac(out, 5, s1, s2);
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append("Rule " + this + " says that if you start in some context ");
 		buf.append(GAMMA + ", and assume A, ");
 		buf.append("and from there you derive B, ");
 		buf.append("then it must be the case that A" + IMPLIES + "B holds in ");
 		buf.append(GAMMA + ". The rule has one premise.");
-		out.print(TextUtil.fill(buf, DEFAULT_WIDTH));
+		out.print(TextUtil.wrap(buf));
 	}
 
 	@Override

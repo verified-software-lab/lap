@@ -5,8 +5,10 @@ import java.io.PrintStream;
 import org.l4cs.cli.CommandLine.View;
 import org.l4cs.pl.nd.Derivation;
 import org.l4cs.pl.nd.Violation;
+import org.l4cs.util.Block;
+import org.l4cs.util.TextUtil;
 
-public class Check_PL {
+public class Check_PL extends Command {
 
 	private static PrintStream out = System.out;
 
@@ -50,11 +52,16 @@ public class Check_PL {
 	public static void describe(CommandLine cl) {
 		out.println("Usage: lap check <options> [<filename>]");
 		out.println("Description:");
-		out.println("  Checks a natural deduction derivation. ");
-		out.println("  By default, the derivation is read from a");
-		out.println("  file, specified by <filename>.  However, using options below, ");
-		out.println("  this can be changed to read from stdin or to specify the ");
-		out.println("  derivation on the command line.  Output is sent to stdout.");
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("Checks a natural deduction derivation. ");
+		sb.append("By default, the derivation is read from a ");
+		sb.append("file, specified by <filename>.  However, using options below, ");
+		sb.append("this can be changed to read from stdin or to specify the ");
+		sb.append("derivation on the command line.  Output is sent to stdout.");
+		sb = TextUtil.wrap(5, sb);
+		out.print(sb.toString());
+
 		out.println("Options:");
 		out.println("  -in     : read formula from stdin");
 		out.println("  -f <string>");
@@ -66,6 +73,36 @@ public class Check_PL {
 		out.println("  -view (none|linear|tree|hierarchy|fitch|tuple|all)  [default: none]");
 		out.println("          : format(s) to print derivation");
 		out.println("For derivation syntax, type \"lap help derivations\".");
+	}
+
+	@Override
+	public String name() {
+		return "lap check";
+	}
+
+	@Override
+	public String shortDescription() {
+		return "check a natural deduction derivation";
+	}
+
+	@Override
+	public String synopsis() {
+		return TextUtil.bold("lap check") + " [ " + TextUtil.underline("options") + " ] [ " + TextUtil.underline("file")
+				+ " ]";
+	}
+
+	@Override
+	public Block description() {
+		Block block1 = par("Checks a natural deduction derivation. ",
+				"By default, the derivation is read from the file named ", TextUtil.underline("file"),
+				".  However, using options below, ", "this can be changed to read from stdin or to specify the ",
+				"derivation on the command line.  Output is sent to stdout.");
+
+		Block block2 = sub(bf("Options:"), seq(optEncoding(), optHighlight(), optIn(""), optLang(), optNumber(),
+				optPlain(), optVerbose(" This option implies " + bf("--view=all") + "."), optView()));
+
+		Block block3 = par("For derivation syntax, type ", bf("lap help derivations"), ".");
+		return seq(block1, block2, block3);
 	}
 
 }

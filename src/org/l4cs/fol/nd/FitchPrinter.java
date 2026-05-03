@@ -30,23 +30,23 @@ public class FitchPrinter {
 	private void writeNumberedLine(int depth, FOLFormula formula, FOLRule r, int[] plines) {
 		String[] newLine = new String[3];
 		lineno++;
-		newLine[0] = TextUtil.blue() + lineno + "." + TextUtil.reset();
+		newLine[0] = TextUtil.blueOn() + lineno + "." + TextUtil.colorOff();
 		StringBuilder sb = new StringBuilder();
-		sb.append(TextUtil.blue());
+		sb.append(TextUtil.blueOn());
 		for (int i = 0; i < depth; i++)
 			sb.append(TextUtil.getVLine());
-		sb.append(TextUtil.reset());
+		sb.append(TextUtil.colorOff());
 		sb.append(formula);
 		newLine[1] = sb.toString();
 		sb = new StringBuilder();
-		sb.append(TextUtil.ruleColor() + "(" + r + ")" + TextUtil.reset());
-		sb.append(TextUtil.blue());
+		sb.append(TextUtil.ruleColorOn() + "(" + r + ")" + TextUtil.colorOff());
+		sb.append(TextUtil.blueOn());
 		for (int i = 0; i < plines.length; i++) {
 			if (i > 0)
 				sb.append(",");
 			sb.append(plines[i]);
 		}
-		sb.append(TextUtil.reset());
+		sb.append(TextUtil.colorOff());
 		newLine[2] = sb.toString();
 		table.add(newLine);
 	}
@@ -55,10 +55,10 @@ public class FitchPrinter {
 		String[] newLine = new String[3];
 		newLine[0] = "";
 		StringBuilder sb = new StringBuilder();
-		sb.append(TextUtil.blue());
+		sb.append(TextUtil.blueOn());
 		for (int i = 0; i < depth; i++)
 			sb.append(TextUtil.getVLine());
-		sb.append(TextUtil.reset());
+		sb.append(TextUtil.colorOff());
 		sb.append(formula);
 		newLine[1] = sb.toString();
 		newLine[2] = "";
@@ -69,11 +69,11 @@ public class FitchPrinter {
 		String[] newLine = new String[3];
 		newLine[0] = "";
 		StringBuilder sb = new StringBuilder();
-		sb.append(TextUtil.blue());
+		sb.append(TextUtil.blueOn());
 		for (int i = 0; i < depth - 1; i++)
 			sb.append(TextUtil.getVLine());
 		sb.append(TextUtil.getTBranch());
-		sb.append(TextUtil.reset());
+		sb.append(TextUtil.colorOff());
 		newLine[1] = sb.toString();
 		newLine[2] = "";
 		table.add(newLine);
@@ -83,10 +83,10 @@ public class FitchPrinter {
 		String[] newLine = new String[3];
 		newLine[0] = "";
 		StringBuilder sb = new StringBuilder();
-		sb.append(TextUtil.blue());
+		sb.append(TextUtil.blueOn());
 		for (int i = 0; i < depth; i++)
 			sb.append(TextUtil.getVLine());
-		sb.append(TextUtil.reset());
+		sb.append(TextUtil.colorOff());
 		newLine[1] = sb.toString();
 		newLine[2] = "";
 		table.add(newLine);

@@ -1,9 +1,5 @@
 package org.l4cs.cli;
 
-import static org.l4cs.util.TextUtil.Hilight.ANSI;
-import static org.l4cs.util.TextUtil.Hilight.NONE;
-import static org.l4cs.util.TextUtil.Hilight.TEX;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -30,6 +26,9 @@ import org.l4cs.pl.semantics.Semantics.SATAlgorithm;
 import org.l4cs.pl.syntax.Formula;
 import org.l4cs.pl.syntax.FormulaFactory;
 import org.l4cs.util.TextUtil;
+import org.l4cs.util.TextUtil.Encoding;
+import org.l4cs.util.TextUtil.Highlight;
+import org.l4cs.util.Version;
 
 public class CommandLine {
 
@@ -59,7 +58,6 @@ public class CommandLine {
 
 	FormulaFactory fac = new FormulaFactory();
 	DerivationFactory df = new DerivationFactory(fac);
-
 	FOLFormulaFactory FOLfac = new FOLFormulaFactory();
 	FOLDerivationFactory FOLdf = new FOLDerivationFactory(FOLfac);
 
@@ -117,54 +115,179 @@ public class CommandLine {
 		System.exit(4);
 	}
 
+	/**
+	 * Parses the command line.
+	 * 
+	 * Following POSIX and GCC conventions, each command line option comes in a
+	 * short and long version. The short version has the form {@code -x} for a
+	 * single character \code{x}. The long version has the form {@code --xxx} for a
+	 * work {@code xxx}.
+	 * 
+	 * <p>
+	 * For options that take arguments: A single-character version is followed by
+	 * space and then the argument. A long version is followed immediately by = and
+	 * the argument, with no space.
+	 * </p>
+	 * 
+	 * Options that take no arguments:
+	 * 
+	 * <pre>
+	-h --help
+	-i --in
+	-m --model
+	-n --number
+	-p --plain
+	-v --verbose
+	   --version
+	 * </pre>
+	 * 
+	 * Options that take an argument:
+	 * 
+	 * <pre>
+	-a --alg=(brute|dpll)
+	-e --encoding=(ascii|unicode|tex)
+	-f --formula=<formula>
+	-l --lang=(pl|fol)
+	-H --highlight=(none|ansi|tex)
+	-V --view=(tuple|tree|hierarchy|fitch|linear)
+	 * </pre>
+	 * 
+	 * Note that some options can occur more than once: {@code --in} and
+	 * {@code --formula}.
+	 * 
+	 * @param args the arguments from the command line, with no processing
+	 */
 	private void parse(String[] args) {
 		int n = args.length;
 		if (n < 1)
 			clErr("missing command");
 		command = args[0];
-		if (command.equals("help")) {
+		if (command.equals("-h") || command.equals("--help") || command.equals("help")) {
+			command = "help";
 			help = true;
+		} else if (command.equals("--version")) {
+			out.println("LAP " + Version.version);
+			System.exit(0);
 		}
 		for (int i = 1; i < n; i++) {
 			String arg = args[i];
-			if (arg.equals("-in")) {
+			if (arg.equals("-i") || arg.equals("--in")) {
 				in = true;
 				inputSpecs.add(new InputSpec(InputSource.IN, null));
-			} else if (arg.equals("-v")) {
+			} else if (arg.equals("-m") || arg.equals("--model")) {
+				model = true;
+			} else if (arg.equals("-n") || arg.equals("--number")) {
+				number = true;
+			} else if (arg.equals("-p") || arg.equals("--plain")) {
+				plain = true;
+				TextUtil.setHighlighting(Highlight.NONE);
+				TextUtil.setEncoding(Encoding.ASCII);
+			} else if (arg.equals("-v") || arg.equals("--verbose")) {
 				verbose = true;
 				number = true;
 				view = View.ALL;
-			} else if (arg.equals("-number")) {
-				number = true;
-			} else if (arg.equals("-plain")) {
-				plain = true;
-				TextUtil.setHighlighting(NONE);
-			} else if (arg.equals("-tex")) {
-				// secret option to output for latex fancyvrb
-				TextUtil.setHighlighting(TEX);
-			} else if (arg.equals("-ansi")) {
-				TextUtil.setHighlighting(ANSI);
-			} else if (arg.equals("-f")) {
-				if (i == n - 1)
-					clErr("Expected string argument after -f");
-				String formulaString = args[++i];
-				inputSpecs.add(new InputSpec(InputSource.STRING, formulaString));
-			} else if (arg.equals("-alg")) {
-				if (i == n - 1)
-					clErr("Expected algorithm name after -alg");
-				String algString = args[++i];
+			} else if (arg.equals("-a") || arg.startsWith("--alg")) {
+				String algString;
+				if (arg.equals("-a")) {
+					if (i == n - 1)
+						clErr("Expected algorithm name after -a");
+					algString = args[++i];
+				} else {
+					if (!arg.startsWith("--alg="))
+						clErr("--alg must be followed by = and then an algorithm name");
+					algString = arg.substring("--alg=".length());
+				}
 				if (algString.equals("brute"))
 					alg = SATAlgorithm.BRUTE_FORCE;
 				else if (algString.equals("dpll"))
 					alg = SATAlgorithm.DPLL;
 				else
 					clErr("Unknown algorithm: " + algString);
-			} else if (arg.equals("-model")) {
-				model = true;
-			} else if (arg.equals("-view")) {
-				if (i == n - 1)
-					clErr("Expected view name after -view");
-				String viewString = args[++i];
+			} else if (arg.equals("-e") || arg.startsWith("--encoding")) {
+				String encodingString;
+				if (arg.equals("-e")) {
+					if (i == n - 1)
+						clErr("Expected encoding name after -e");
+					encodingString = args[++i];
+				} else {
+					if (!arg.startsWith("--encoding="))
+						clErr("--encoding must be followed by = and then an encoding code");
+					encodingString = arg.substring("--encoding=".length());
+				}
+				if (encodingString.equals("ascii"))
+					TextUtil.setEncoding(Encoding.ASCII);
+				else if (encodingString.equals("unicode"))
+					TextUtil.setEncoding(Encoding.UNICODE);
+				else
+					clErr("Unknown encoding: " + encodingString);
+			} else if (arg.equals("-f") || arg.startsWith("--formula")) {
+				String formulaString;
+				if (arg.equals("-f")) {
+					if (i == n - 1)
+						clErr("Expected formula string after -f");
+					formulaString = args[++i];
+				} else {
+					if (!arg.startsWith("--formula="))
+						clErr("--formula must be followed by = and then a formula string");
+					formulaString = arg.substring("--formula=".length());
+				}
+				if ((formulaString.startsWith("\"") && formulaString.endsWith("\""))
+						|| (formulaString.startsWith("'") && formulaString.endsWith("'")))
+					formulaString = formulaString.substring(1, formulaString.length() - 1);
+				inputSpecs.add(new InputSpec(InputSource.STRING, formulaString));
+			} else if (arg.equals("-l") || arg.startsWith("--lang")) {
+				String languageString;
+				if (arg.equals("-l")) {
+					if (i == n - 1)
+						clErr("Expected language name after -l");
+					languageString = args[++i];
+				} else {
+					if (!arg.startsWith("--lang="))
+						clErr("--lang must be followed by = and then a language name");
+					languageString = arg.substring("--lang=".length());
+				}
+				if (languageString.equals("pl"))
+					lang = Language.PL;
+				else if (languageString.equals("fol"))
+					lang = Language.FOL;
+				else
+					clErr("Unknown language: " + languageString);
+			} else if (arg.equals("-H") || arg.startsWith("--highlight")) {
+				String highlightString;
+				if (arg.equals("-H")) {
+					if (i == n - 1)
+						clErr("Expected highlighting code after -H");
+					highlightString = args[++i];
+				} else {
+					if (!arg.startsWith("--highlight="))
+						clErr("--highlight must be followed by = and then a highlighting code");
+					highlightString = arg.substring("--highlight=".length());
+				}
+				switch (highlightString) {
+				case "none":
+					TextUtil.setHighlighting(Highlight.NONE);
+					break;
+				case "ansi":
+					TextUtil.setHighlighting(Highlight.ANSI);
+					break;
+				case "tex":
+					TextUtil.setHighlighting(Highlight.TEX);
+					break;
+				default:
+					throw new RuntimeException("unreachable");
+				}
+
+			} else if (arg.equals("-V") || arg.startsWith("--view")) {
+				String viewString;
+				if (arg.equals("-V")) {
+					if (i == n - 1)
+						clErr("Expected view code after -V");
+					viewString = args[++i];
+				} else {
+					if (!arg.startsWith("--view="))
+						clErr("--view must be followed by = and then a view code");
+					viewString = arg.substring("--view=".length());
+				}
 				switch (viewString) {
 				case "none":
 					view = View.NONE;
@@ -190,16 +313,6 @@ public class CommandLine {
 				default:
 					clErr("unknown view: " + viewString);
 				}
-			} else if (arg.equals("-lang")) {
-				if (i == n - 1)
-					clErr("Expected language name after -lang");
-				String langString = args[++i];
-				if (langString.equals("pl"))
-					lang = Language.PL;
-				else if (langString.equals("fol"))
-					lang = Language.FOL;
-				else
-					clErr("Unknown language: " + langString);
 			} else { // a stand-alone argument
 				if (help) {
 					if (helpCommand != null)
@@ -210,7 +323,6 @@ public class CommandLine {
 					inputSpecs.add(new InputSpec(InputSource.FILE, arg));
 			}
 		}
-
 	}
 
 	int getNumInputs() {

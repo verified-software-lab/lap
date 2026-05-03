@@ -1,13 +1,13 @@
 package org.l4cs.util;
 
-import static org.l4cs.util.TextUtil.Hilight.NONE;
-
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 public class TextUtil {
 
-	public static final int DEFAULT_WIDTH = 75; // number of columns
 	public static final String GAMMA = "\u0393"; // latex \Gamma
 	private static final String INFERS = "\u22A2"; // latex \vdash
 	public static final String AND = "\u2227"; // latex \wedge
@@ -17,27 +17,42 @@ public class TextUtil {
 	public static final String TOP = "\u22A4"; // latex \top
 	public static final String BOT = "\u22A5"; // latex \bot
 	public static final String BAR = "\u007C"; // vertical bar
-
 	public static final String FORALL = "\u2200"; // latex \forall
 	public static final String EXISTS = "\u2203"; // latex \exists
 
+	// ANSI Escape Sequences...
 	private static final String ANSI_RESET = "\u001B[0m";
-//	private static final String ANSI_BOLD = "\u001B[1m";
-	private static final String ANSI_BLACK = "\u001B[30m";
-	private static final String ANSI_RED = "\u001B[31m";
-	private static final String ANSI_GREEN = "\u001B[32m";
-//	private static final String ANSI_YELLOW = "\u001B[33m";
-	private static final String ANSI_BLUE = "\u001B[34m";
-	private static final String ANSI_PURPLE = "\u001B[35m";
-	private static final String ANSI_CYAN = "\u001B[36m";
-//	private static final String ANSI_WHITE = "\u001B[37m";
+	private static final String ANSI_BOLD_ON = "\u001B[1m";
+	private static final String ANSI_BOLD_OFF = "\u001B[22m";
+	private static final String ANSI_UNDERLINE_ON = "\u001B[4m";
+	private static final String ANSI_UNDERLINE_OFF = "\u001B[24m";
+	private static final String ANSI_BLACK_ON = "\u001B[30m";
+	private static final String ANSI_RED_ON = "\u001B[31m";
+	private static final String ANSI_GREEN_ON = "\u001B[32m";
+	private static final String ANSI_BLUE_ON = "\u001B[34m";
+	private static final String ANSI_PURPLE_ON = "\u001B[35m";
+	private static final String ANSI_CYAN_ON = "\u001B[36m";
+	private static final String ANSI_COLOR_OFF = "\u001B[39m";
 
-	private static String term = System.getenv("TERM");
+	/**
+	 * Character encoding to use for output.
+	 */
+	public static enum Encoding {
+		/**
+		 * ASCII text only.
+		 */
+		ASCII,
+
+		/**
+		 * Unicode characters using UTF-8.
+		 */
+		UNICODE
+	}
 
 	/**
 	 * How to highlight text using colors, etc.
 	 */
-	public static enum Hilight {
+	public static enum Highlight {
 		/**
 		 * Do no highlighting.
 		 */
@@ -54,18 +69,64 @@ public class TextUtil {
 	}
 
 	/**
-	 * The kind of highlighting (colors, subscripts, etc.) to use. This variable is
-	 * initialized to a default value based on a best guess, but it can be see
-	 * explicitly using method {@link #setHighlighting(Hilight)}.
+	 * Width of the terminal (in characters).
 	 */
-	private static Hilight highlighting = System.console() != null && !term.equalsIgnoreCase("dumb") ? Hilight.ANSI
-			: NONE;
+	private static int terminalWidth;
 
-	public static void setHighlighting(Hilight val) {
-		highlighting = val;
+	/**
+	 * How characters are encoded for the output. A default value is set in the
+	 * static initializer but this can be changed using
+	 * {@link #setEncoding(Encoding)}.
+	 */
+	private static Encoding encoding;
+
+	/**
+	 * The kind of highlighting (for colors, subscripts, etc.) to use. This variable
+	 * is initialized to a default value based on a best guess, but it can be set
+	 * explicitly using method {@link #setHighlighting(Highlight)}.
+	 */
+	private static Highlight highlighting;
+
+	static {
+		String lang = System.getenv("LANG");
+		boolean supportsUnicode = lang != null && lang.toUpperCase().contains("UTF-8");
+		String term = System.getenv("TERM");
+		boolean supportsAnsi = term != null
+				&& (term.contains("color") || term.contains("xterm") || term.contains("ansi"));
+		encoding = supportsUnicode ? Encoding.UNICODE : Encoding.ASCII;
+		highlighting = supportsAnsi ? Highlight.ANSI : Highlight.NONE;
+		// try to get the Terminal width...
+		ProcessBuilder pb = new ProcessBuilder("sh", "-c", "tput cols < /dev/tty");
+		try {
+			Process p = pb.start();
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+				String line = reader.readLine();
+				if (line != null)
+					terminalWidth = Integer.parseInt(line.trim());
+			}
+			p.waitFor();
+		} catch (Exception e) {
+			terminalWidth = 80;
+		}
 	}
 
-	public static Hilight highlighting() {
+	public static int terminalWidth() {
+		return terminalWidth;
+	}
+
+	public static void setEncoding(Encoding enc) {
+		encoding = enc;
+	}
+
+	public static Encoding encoding() {
+		return encoding;
+	}
+
+	public static void setHighlighting(Highlight hl) {
+		highlighting = hl;
+	}
+
+	public static Highlight highlighting() {
 		return highlighting;
 	}
 
@@ -78,7 +139,7 @@ public class TextUtil {
 	 */
 	public static String subscript(int n) {
 		assert n >= 0;
-		if (highlighting != NONE) {
+		if (highlighting == Highlight.ANSI) {
 			if (n == 0)
 				return "\u2080";
 			String result = "";
@@ -94,12 +155,19 @@ public class TextUtil {
 		}
 	}
 
-	public static String blue() {
+	/**
+	 * Returns the string which causes the output device to start using the color
+	 * blue. This must later be "closed" by outputting the string returned by
+	 * {@link #colorOff()}.
+	 * 
+	 * @return the string which starts a scope in which color will be blue
+	 */
+	public static String blueOn() {
 		switch (highlighting) {
 		case NONE:
 			return "";
 		case ANSI:
-			return ANSI_BLUE;
+			return ANSI_BLUE_ON;
 		case TEX:
 			return "\\textcolor{blue}{";
 		default:
@@ -107,12 +175,19 @@ public class TextUtil {
 		}
 	}
 
-	public static String cyan() {
+	/**
+	 * Returns the string which causes the output device to start using the color
+	 * cyan. This must later be "closed" by outputting the string returned by
+	 * {@link #colorOff()}.
+	 * 
+	 * @return the string which starts a scope in which color will be cyan
+	 */
+	public static String cyanOn() {
 		switch (highlighting) {
 		case NONE:
 			return "";
 		case ANSI:
-			return ANSI_CYAN;
+			return ANSI_CYAN_ON;
 		case TEX:
 			return "\\textcolor{cyan}{";
 		default:
@@ -120,12 +195,19 @@ public class TextUtil {
 		}
 	}
 
-	public static String green() {
+	/**
+	 * Returns the string which causes the output device to start using the color
+	 * green. This must later be "closed" by outputting the string returned by
+	 * {@link #colorOff()}.
+	 * 
+	 * @return the string which starts a scope in which color will be green
+	 */
+	public static String greenOn() {
 		switch (highlighting) {
 		case NONE:
 			return "";
 		case ANSI:
-			return ANSI_GREEN;
+			return ANSI_GREEN_ON;
 		case TEX:
 			return "\\textcolor{green}{";
 		default:
@@ -133,12 +215,19 @@ public class TextUtil {
 		}
 	}
 
-	public static String purple() {
+	/**
+	 * Returns the string which causes the output device to start using the color
+	 * purple. This must later be "closed" by outputting the string returned by
+	 * {@link #colorOff()}.
+	 * 
+	 * @return the string which starts a scope in which color will be purple
+	 */
+	public static String purpleOn() {
 		switch (highlighting) {
 		case NONE:
 			return "";
 		case ANSI:
-			return ANSI_PURPLE;
+			return ANSI_PURPLE_ON;
 		case TEX:
 			return "\\textcolor{purple}{";
 		default:
@@ -146,12 +235,19 @@ public class TextUtil {
 		}
 	}
 
-	public static String red() {
+	/**
+	 * Returns the string which causes the output device to start using the color
+	 * red. This must later be "closed" by outputting the string returned by
+	 * {@link #colorOff()}.
+	 * 
+	 * @return the string which starts a scope in which color will be red
+	 */
+	public static String redOn() {
 		switch (highlighting) {
 		case NONE:
 			return "";
 		case ANSI:
-			return ANSI_RED;
+			return ANSI_RED_ON;
 		case TEX:
 			return "\\textcolor{red}{";
 		default:
@@ -159,12 +255,19 @@ public class TextUtil {
 		}
 	}
 
-	public static String black() {
+	/**
+	 * Returns the string which causes the output device to start using the color
+	 * black. This must later be "closed" by outputting the string returned by
+	 * {@link #colorOff()}.
+	 * 
+	 * @return the string which starts a scope in which color will be black
+	 */
+	public static String blackOn() {
 		switch (highlighting) {
 		case NONE:
 			return "";
 		case ANSI:
-			return ANSI_BLACK;
+			return ANSI_BLACK_ON;
 		case TEX:
 			return "\\textcolor{black}{";
 		default:
@@ -172,27 +275,147 @@ public class TextUtil {
 		}
 	}
 
-	public static String ruleColor() {
-		return red();
-	}
-
-	public static String numberColor() {
-		return blue();
-	}
-
-	public static String infersColor() {
-		return black();
-	}
-
-	public static String infers() {
-		if (highlighting == NONE) {
-			return "|-";
-		} else {
-			// return infersColor() + INFERS + reset();
-			return INFERS;
+	/**
+	 * Returns the string which causes the output device to start underlining. This
+	 * must later be "closed" by outputting the string returned by
+	 * {@link #underlineOff()}.
+	 * 
+	 * @return the string which starts a scope in which underlining is on
+	 */
+	public static String underlineOn() {
+		switch (highlighting) {
+		case NONE:
+			return "";
+		case ANSI:
+			return ANSI_UNDERLINE_ON;
+		case TEX:
+			return "\\underline{";
+		default:
+			throw new RuntimeException("unreachable");
 		}
 	}
 
+	/**
+	 * Returns the string which causes the output device to stop underlining. This
+	 * closes the scope started by {@link #underlineOn().
+	 * 
+	 * @return the string which closes the underlining scope
+	 */
+	public static String underlineOff() {
+		switch (highlighting) {
+		case NONE:
+			return "";
+		case ANSI:
+			return ANSI_UNDERLINE_OFF;
+		case TEX:
+			return "}";
+		default:
+			throw new RuntimeException("unreachable");
+		}
+	}
+
+	/**
+	 * Underlines the string.
+	 * 
+	 * @param str the string to be underlined
+	 * @return the string, underlined
+	 */
+	public static String underline(String str) {
+		switch (highlighting) {
+		case NONE:
+			return str;
+		case ANSI:
+			return ANSI_UNDERLINE_ON + str + ANSI_UNDERLINE_OFF;
+		case TEX:
+			return "\\underline{" + str + "}";
+		default:
+			throw new RuntimeException("unreachable");
+		}
+	}
+
+	public static String boldOn() {
+		switch (highlighting) {
+		case NONE:
+			return "";
+		case ANSI:
+			return ANSI_BOLD_ON;
+		case TEX:
+			return "\\textbf{";
+		default:
+			throw new RuntimeException("unreachable");
+		}
+	}
+
+	public static String boldOff() {
+		switch (highlighting) {
+		case NONE:
+			return "";
+		case ANSI:
+			return ANSI_BOLD_OFF;
+		case TEX:
+			return "}";
+		default:
+			throw new RuntimeException("unreachable");
+		}
+	}
+
+	public static String bold(String str) {
+		switch (highlighting) {
+		case NONE:
+			return str;
+		case ANSI:
+			return ANSI_BOLD_ON + str + ANSI_BOLD_OFF;
+		case TEX:
+			return "\\textbf{" + str + "}";
+		default:
+			throw new RuntimeException("unreachable");
+		}
+	}
+
+	public static String ruleColorOn() {
+		return redOn();
+	}
+
+	public static String numberColorOn() {
+		return blueOn();
+	}
+
+	public static String infers() {
+		switch (encoding) {
+		case ASCII:
+			return "|-";
+		case UNICODE:
+			return INFERS;
+		default:
+			throw new RuntimeException("unreachable");
+		}
+	}
+
+	/**
+	 * Stop using the current color. This is used to close a scope started by the
+	 * previous "color on" command.
+	 * 
+	 * @return the string to turn off color
+	 */
+	public static String colorOff() {
+		switch (highlighting) {
+		case NONE:
+			return "";
+		case ANSI:
+			return ANSI_COLOR_OFF;
+		case TEX:
+			return "}";
+		default:
+			throw new RuntimeException("unreachable");
+		}
+	}
+
+	/**
+	 * Turns off all highlighting, returns to default color, etc. Do not use this to
+	 * close a scoped instruction.
+	 * 
+	 * @return the string to do a reset
+	 */
 	public static String reset() {
 		switch (highlighting) {
 		case NONE:
@@ -200,7 +423,7 @@ public class TextUtil {
 		case ANSI:
 			return ANSI_RESET;
 		case TEX:
-			return "}";
+			return "";
 		default:
 			throw new RuntimeException("unreachable");
 		}
@@ -228,72 +451,126 @@ public class TextUtil {
 	}
 
 	/**
-	 * Tries to print a string over multiple lines, wrapping to keep each line at
-	 * most maxWidth columns. If it is not possible to keep a line within that
-	 * number of columns (because there is a sequence of non-whitespace characters
-	 * greater than maxWidth) then a line may exceed maxWidth.
+	 * Wraps text to fit within a region. This method consumes a StringBuilder
+	 * {@code in} containing the original text, and produces a new StringBuilder
+	 * {@code out}, without modifying {@code in}. Within {@code out}, each line will
+	 * start with {@code indent} spaces and the total length of the line will be at
+	 * most {@code maxWidth} characters, with one exception described below. A
+	 * newline in {@code out} can only occur where there was some form of white
+	 * space (a sequence of tabs, spaces, and/or newlines) in the original text.
+	 * Finally, {@code out} will always end with a newline: if a terminal newline
+	 * was not present in the original text, one will be added.
 	 * 
-	 * @param out      string buffer to which to print
-	 * @param s        the string to print
-	 * @param maxWidth maximum length of a line, if possible
+	 * <p>
+	 * Exception: When it is impossible to meet these criteria, because {@code in}
+	 * contains a long sequence of characters with no white space, then {@code out}
+	 * may contain a line longer than {@code maxWidth}.
+	 * </p>
+	 * 
+	 * 
 	 */
-	public static StringBuffer fill(StringBuffer in, int maxWidth) {
-		StringBuffer out = new StringBuffer();
-		int len = in.length();
-		int idx = 0; // next index to be printed
-		int ws1 = -1; // index of last white space character after idx
-		for (int i = 0; i < len; i++) {
-			if (i - idx > maxWidth && ws1 > idx) { // print idx..ws1-1
-				while (idx < ws1)
-					out.append(in.charAt(idx++));
-				out.append('\n'); // print newline instead of white space
-				idx++;
-				ws1 = -1; // have not seen white space since last print
+	static StringBuilder wrap(StringBuilder in, int indent, int maxWidth) {
+		StringBuilder out = new StringBuilder();
+
+		// Standard Java regex for ANSI escape sequences
+		Pattern ansiPattern = Pattern.compile("\\u001B\\[[0-9;]*[mK]");
+
+		// Instead of trim(), we use a regex split that preserves the Escape characters
+		// but still breaks the input into words based on whitespace.
+		// We filter out empty strings in case of multiple spaces.
+		String[] words = in.toString().split("\\s+");
+
+		String indentation = " ".repeat(indent);
+		StringBuilder currentLine = new StringBuilder();
+		currentLine.append(indentation);
+		int currentVisibleLength = indent;
+
+		boolean firstWordProcessed = false;
+
+		for (String word : words) {
+			if (word.isEmpty())
+				continue;
+
+			int wordVisibleLength = ansiPattern.matcher(word).replaceAll("").length();
+
+			// Check if this is the very first word of the entire input
+			if (!firstWordProcessed) {
+				currentLine.append(word);
+				currentVisibleLength += wordVisibleLength;
+				firstWordProcessed = true;
+				continue;
 			}
-			char c = in.charAt(i);
-			if (c == ' ' || c == '\t' || c == '\n')
-				ws1 = i;
-		}
-		if (idx < len) { // print remainder...
-			if (len - idx <= maxWidth || ws1 <= idx) {
-				while (idx < len)
-					out.append(in.charAt(idx++));
-				out.append('\n');
+
+			// Logic for subsequent words
+			if (currentVisibleLength + 1 + wordVisibleLength > maxWidth) {
+				out.append(currentLine).append("\n");
+				currentLine = new StringBuilder(indentation);
+				currentVisibleLength = indent;
+				currentLine.append(word);
+				currentVisibleLength += wordVisibleLength;
 			} else {
-				while (idx < ws1)
-					out.append(in.charAt(idx++));
-				out.append('\n');
-				idx++;
-				while (idx < len)
-					out.append(in.charAt(idx++));
-				out.append('\n');
+				currentLine.append(" ");
+				currentLine.append(word);
+				currentVisibleLength += 1 + wordVisibleLength;
 			}
 		}
+
+		// Always ensure we append the last line and a terminal newline
+		if (firstWordProcessed) {
+			out.append(currentLine).append("\n");
+		} else {
+			// Handle case where input was only whitespace
+			out.append(indentation).append("\n");
+		}
+
 		return out;
 	}
 
-	public static StringBuffer fill(String s, int maxWidth) {
-		return fill(new StringBuffer(s), maxWidth);
+	public static StringBuilder wrap(int indent, StringBuilder in) {
+		return wrap(in, indent, terminalWidth);
 	}
 
-	/** True length of a string, ignoring the ANSI characters. */
+	public static StringBuilder wrap(int indent, String s) {
+		return wrap(new StringBuilder(s), indent, terminalWidth);
+	}
+
+	public static StringBuilder wrap(StringBuilder in) {
+		return wrap(in, 0, terminalWidth);
+	}
+
+	public static StringBuilder wrap(String s) {
+		return wrap(new StringBuilder(s), 0, terminalWidth);
+	}
+
+	/**
+	 * True length of a string, ignoring the ANSI characters and LaTeX color macros
+	 * used for highlighting. This will work for encoding ASCII and UNICODE, but not
+	 * yet for the TEX encoding. This will work
+	 */
 	public static int length(String string) {
 		int result = string.length();
 		for (int i = 0; i < string.length(); i++) {
 			char c = string.charAt(i);
-			if (c == '\u001B') {
-				int skip = string.charAt(i + 2) == '0' ? 3 : 4;
-				i += skip;
-				result -= (skip + 1);
+			if (c == '\u001B') { // ANSI escape character
+				// proceed just past first "m"...
+				int newPos = string.indexOf("m", i);
+				assert newPos > i;
+				result -= newPos + 1 - i;
+				i = newPos; // i will be incremented before next iteration
 			} else if (c == '\\') {
-				// latex command of form \textcolor{...}{
-				// consume until "}{"
-				int latexStop = string.indexOf("}{", i);
-				assert latexStop > 0;
-				int newPos = latexStop + 2;
-				result -= newPos - i;
-				i = newPos;
-			} else if (c == '}') {
+				int latexStop;
+				if (string.startsWith("underline{", i + 1) || string.startsWith("textbf{", i + 1)) {
+					// single-argument latex macro
+					latexStop = string.indexOf("{", i + 1);
+				} else {
+					// 2-argument latex macro, e.g., \textcolor{blue}{blah}
+					latexStop = string.indexOf("}{", i + 1);
+				}
+				assert latexStop > i + 1;
+				int newPos = latexStop + 1;
+				result -= newPos + 1 - i;
+				i = newPos; // i will be incremented before next iteration
+			} else if (c == '}') { // end of latex macro
 				result--;
 			}
 		}
@@ -358,29 +635,27 @@ public class TextUtil {
 	}
 
 	public static String getCircled(int n) {
-		if (highlighting == NONE)
+		if (encoding != Encoding.UNICODE)
 			return "(" + n + ")";
-		if (n >= 1 && n <= 20)
+		if (n >= 1 && n <= 20) // 2460-2473
 			return String.valueOf((char) ('\u245F' + n));
-		if (n >= 21 && n <= 35)
+		if (n >= 21 && n <= 35) // 3251-325F
 			return String.valueOf((char) ('\u3251' + n - 21));
-		if (n >= 36 && n <= 50)
+		if (n >= 36 && n <= 50) // 32B1-32BF
 			return String.valueOf((char) ('\u32B1' + n - 36));
 		return "(" + n + ")";
 	}
 
 	public static String getVLine() {
-		return highlighting != NONE ? "\u2502 " : "| ";
-//		return highlighting == ANSI ? "\u2502 " : "| ";
+		return encoding == Encoding.UNICODE ? "\u2502 " : "| ";
 	}
 
 	public static String getHLine() {
-		return highlighting != NONE ? "\u2500" : "-";
+		return encoding == Encoding.UNICODE ? "\u2500" : "-";
 	}
 
 	public static String getTBranch() {
-		return highlighting != NONE ? "\u251C\u2500\u2500\u2500" : "|---";
-//		return highlighting == ANSI ? "\u251C\u2500\u2500\u2500" : "|---";
+		return encoding == Encoding.UNICODE ? "\u251C\u2500\u2500\u2500" : "|---";
 	}
 
 }
