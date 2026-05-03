@@ -55,7 +55,9 @@ public abstract class Block {
 	 * the entire block is indented one level to the right.
 	 */
 	public static Block sub(String heading, Block body) {
-		return new SubBlock(heading, body);
+		SubBlock sub = new SubBlock(heading, body);
+		sub.setAlign(false);
+		return sub;
 	}
 
 	/**
@@ -77,6 +79,12 @@ public abstract class Block {
 		SeqBlock block = new SeqBlock(blocks);
 		block.setSeparate(false);
 		return block;
+	}
+
+	public static Block def(String heading, Block body) {
+		SubBlock sub = new SubBlock(heading, body);
+		sub.setAlign(true);
+		return sub;
 	}
 
 }

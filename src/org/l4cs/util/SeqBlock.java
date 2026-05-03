@@ -22,7 +22,7 @@ public class SeqBlock extends Block {
 	}
 
 	@Override
-	public StringBuilder render(int level) {
+	public StringBuilder render(int indent) {
 		StringBuilder result = new StringBuilder();
 		boolean first = true;
 		for (Block member : members) {
@@ -32,11 +32,8 @@ public class SeqBlock extends Block {
 				else
 					result.append("\n");
 			}
-			result.append(member.render(level));
+			result.append(member.render(indent));
 		}
 		return result;
 	}
-
-	// characteristics: newline between blocks or not?
-
 }

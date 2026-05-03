@@ -50,6 +50,11 @@ public abstract class Command {
 		return Block.cat(blocks);
 	}
 
+	// definition block
+	protected static Block def(String heading, Block body) {
+		return Block.def(heading, body);
+	}
+
 	protected static String opt0(String one, String two) {
 		return bf(one) + ", " + bf(two);
 	}
@@ -96,7 +101,11 @@ public abstract class Command {
 	}
 
 	protected static Block optVersion(String extra) {
-		return sub(bf("--version"), par("Print version information.", extra));
+		return sub(bf("--version"), par("Print version information and exit.", extra));
+	}
+
+	protected static Block optVersion() {
+		return optVersion("");
 	}
 
 	protected static Block optLang(String extra) {
@@ -123,13 +132,13 @@ public abstract class Command {
 	protected static Block optView() {
 		return sub(opt1("-V", "view", "--view"), //
 				cat(par("Specify the format for the derivation.  " + ul("view") + " is one of: "), //
-						fix(bf("none") + "      - display nothing"), //
-						fix(bf("tuple") + "     - tuple format"), //
-						fix(bf("tree") + "      - tree format, root on bottom"), //
-						fix(bf("hierarchy") + " - directory hierarchy style, root on top"), //
-						fix(bf("fitch") + "     - Fitch diagram"), //
-						fix(bf("linear") + "    - linear format, conclusion at bottom"), //
-						fix(bf("all") + "       - display all formats")));
+						def(bf("none") + "      - ", par("display nothing")), //
+						def(bf("tuple") + "     - ", par("tuple format")), //
+						def(bf("tree") + "      - ", par("tree format, root on bottom")), //
+						def(bf("hierarchy") + " - ", par("directory hierarchy style, root on top")), //
+						def(bf("fitch") + "     - ", par("Fitch diagram")), //
+						def(bf("linear") + "    - ", par("linear format, conclusion at bottom")), //
+						def(bf("all") + "       - ", par("display all formats"))));
 	}
 
 	protected static Block optFormula() {

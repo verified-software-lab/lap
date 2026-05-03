@@ -5,7 +5,7 @@ public class Executor {
 	private static void execute_PL(CommandLine cl) {
 		switch (cl.command) {
 		case "help":
-			Help.execute(cl);
+			new Help(cl).execute();
 			break;
 		case "cnf":
 			Cnf.execute(cl);
@@ -42,7 +42,7 @@ public class Executor {
 	private static void execute_FOL(CommandLine cl) {
 		switch (cl.command) {
 		case "help":
-			Help.execute(cl);
+			new Help(cl).execute();
 			break;
 		case "check":
 			Check_FOL.execute(cl);

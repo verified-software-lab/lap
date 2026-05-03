@@ -26,9 +26,9 @@ public class TxtBlock extends Block {
 	}
 
 	@Override
-	public StringBuilder render(int level) {
+	public StringBuilder render(int indent) {
 		if (wrap) {
-			return TextUtil.wrap(level * Block.tab, body);
+			return TextUtil.wrap(indent, body);
 		} else {
 			// every line should be indented
 			StringBuilder result = new StringBuilder();
@@ -37,7 +37,7 @@ public class TxtBlock extends Block {
 			for (int i = 0; i < n; i++) {
 				char c = body.charAt(i);
 				if (newline) {
-					result.append(TextUtil.repeatStr(" ", level * Block.tab));
+					result.append(" ".repeat(indent));
 					newline = false;
 				}
 				result.append(c);

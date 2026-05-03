@@ -34,6 +34,9 @@ public class TextUtil {
 	private static final String ANSI_CYAN_ON = "\u001B[36m";
 	private static final String ANSI_COLOR_OFF = "\u001B[39m";
 
+	// regular expression for ANSI escape sequences...
+	private static Pattern ansiPattern = Pattern.compile("\\u001B\\[[0-9;]*[mK]");
+
 	/**
 	 * Character encoding to use for output.
 	 */
@@ -451,6 +454,16 @@ public class TextUtil {
 	}
 
 	/**
+	 * The length of the string with all ANSI escape sequences removed.
+	 * 
+	 * @param str a string
+	 * @return length, ignoring the invisible ANSI characters
+	 */
+	public static int visibleLength(String str) {
+		return ansiPattern.matcher(str).replaceAll("").length();
+	}
+
+	/**
 	 * Wraps text to fit within a region. This method consumes a StringBuilder
 	 * {@code in} containing the original text, and produces a new StringBuilder
 	 * {@code out}, without modifying {@code in}. Within {@code out}, each line will
@@ -471,10 +484,6 @@ public class TextUtil {
 	 */
 	static StringBuilder wrap(StringBuilder in, int indent, int maxWidth) {
 		StringBuilder out = new StringBuilder();
-
-		// Standard Java regex for ANSI escape sequences
-		Pattern ansiPattern = Pattern.compile("\\u001B\\[[0-9;]*[mK]");
-
 		// Instead of trim(), we use a regex split that preserves the Escape characters
 		// but still breaks the input into words based on whitespace.
 		// We filter out empty strings in case of multiple spaces.
@@ -491,7 +500,7 @@ public class TextUtil {
 			if (word.isEmpty())
 				continue;
 
-			int wordVisibleLength = ansiPattern.matcher(word).replaceAll("").length();
+			int wordVisibleLength = visibleLength(word);
 
 			// Check if this is the very first word of the entire input
 			if (!firstWordProcessed) {

@@ -1,52 +1,17 @@
 package org.l4cs.cli;
 
-import java.io.PrintStream;
-
 import org.l4cs.fol.nd.FOLRule;
 import org.l4cs.pl.nd.Rule;
+import org.l4cs.util.Block;
 import org.l4cs.util.TextUtil;
 
-public class Help {
+public class Help extends Command {
 
-	private static PrintStream out = System.out;
-
-	private static void usage_PL() {
-		out.println("lap: Logic, Algorithms, Proof tool (language: Propositional Logic)");
-		out.println("Usage: lap <command> ...");
-		out.println("Commands: ");
-		out.println("  help    - print usage information");
-		out.println("  nnf     - convert a propositional formula to negation normal form");
-		out.println("  cnf     - convert a propositional formula to conjunctive normal form");
-		out.println("  dnf     - convert a propositional formula to disjunctive normal form");
-		out.println("  tseytin - convert a propositional formula to an equisatisfiable CNF formula");
-		out.println("  dpll    - apply the DPLL algorithm to a CNF formula");
-		out.println("  sat     - determine if a propositional formula is satisfiable");
-		out.println("  valid   - determine if a propositional formula is valid (a tautology)");
-		out.println("  equiv   - determine whether two propositional formulas are equivalent");
-		out.println("  check   - check a natural deduction derivation for PL or FOL");
-		out.println();
-		out.println("Type \"lap help <command>\" for detailed help on a specific command.");
-		out.println("Type \"lap help formulas\" for formula syntax.");
-		out.println("Type \"lap help derivations\" for derivation syntax.");
-		out.println("Insert \"-lang <language>\" after \"help\" to specify language.");
-		out.println("Languages: pl (default), fol.");
+	public Help(CommandLine cl) {
+		super(cl);
 	}
 
-	private static void usage_FOL() {
-		out.println("lap: Logic, Algorithms, Proof tool (language: First Order Logic)");
-		out.println("Usage: lap <command> ...");
-		out.println("Commands: ");
-		out.println("  help    - print usage information");
-		out.println("  check   - check a natural deduction derivation for PL or FOL");
-		out.println();
-		out.println("Type \"lap help <command>\" for detailed help on a specific command.");
-		out.println("Type \"lap help formulas\" for formula syntax.");
-		out.println("Type \"lap help derivations\" for derivation syntax.");
-		out.println("Insert \"-lang <language>\" after \"help\" to specify language.");
-		out.println("Languages: pl (default), fol.");
-	}
-
-	private static void formulas_PL(CommandLine cl) {
+	private void formulas_PL() {
 		out.println("PL Formula syntax:");
 		out.println();
 		out.println("Propositions are identifiers as in C or Java programs.");
@@ -66,8 +31,7 @@ public class Help {
 		out.println("Parentheses (\"(...)\") can also be used for grouping.");
 	}
 
-	private static void formulas_FOL(CommandLine cl) {
-		// ADDED: FOL syntax based on PL counterpart and our explicit conventions
+	private void formulas_FOL() {
 		out.println("FOL Formula syntax:");
 		out.println();
 		out.println("Identifiers are as in C or Java programs.");
@@ -83,7 +47,6 @@ public class Help {
 		out.println("Connectives and primitives can be represented in multiple ways:");
 		out.println("  - FORALL  : FORALL forall \u2200");
 		out.println("  - EXISTS  : EXISTS exists \u2203");
-		// out.println(" - EQUALS : =");
 		out.println("  - NOT     : NOT ! " + TextUtil.NOT);
 		out.println("  - AND     : AND & &&" + TextUtil.AND);
 		out.println("  - OR      : OR | ||" + TextUtil.OR);
@@ -98,7 +61,7 @@ public class Help {
 		out.println("Parentheses (\"(...)\") can also be used for grouping.");
 	}
 
-	private static void derivations_PL(CommandLine cl) {
+	private void derivations_PL() {
 		out.println("PL Derivation syntax: ");
 		out.println();
 		out.println("The sequent symbol is denoted |- or ⊢");
@@ -128,18 +91,15 @@ public class Help {
 		out.println("Example step:");
 		out.println("  3. p, p -> q |- q (E->) 1, 2;");
 		out.println();
-		formulas_PL(cl);
+		formulas_PL();
 	}
 
-	private static void derivations_FOL(CommandLine cl) {
-		// ADDED: FOL derivation syntax mirroring the PL counterpart.
+	private void derivations_FOL() {
 		out.println("FOL Derivation syntax: ");
 		out.println();
 		out.println("The sequent symbol is denoted |- or ⊢");
 		out.println("Inference rules:");
 		out.println();
-
-		// ADDED: Mirrored the PL factory loading for FOL
 		try {
 			org.l4cs.fol.syntax.FOLFormulaFactory fac = new org.l4cs.fol.syntax.FOLFormulaFactory();
 			org.l4cs.fol.nd.FOLDerivationFactory df = new org.l4cs.fol.nd.FOLDerivationFactory(fac);
@@ -170,17 +130,17 @@ public class Help {
 		out.println("  1. forall x. P(x) |- forall x. P(x) (Ax);");
 		out.println("  2. forall x. P(x) |- P(y) (Eforall) 1;");
 		out.println();
-		formulas_FOL(cl); // MODIFIED: Call formulas_FOL instead of formulas_PL
+		formulas_FOL();
 	}
 
-	private static void execute_PL(CommandLine cl) {
+	private void execute_PL() {
 		if (cl.helpCommand == null) {
-			usage_PL();
+			man(out);
 			return;
 		}
 		switch (cl.helpCommand) {
 		case "help":
-			usage_PL();
+			man(out);
 			break;
 		case "cnf":
 			Cnf.describe(cl);
@@ -210,47 +170,129 @@ public class Help {
 			new Check_PL(cl).man(out);
 			break;
 		case "formulas":
-			formulas_PL(cl);
+			formulas_PL();
 			break;
 		case "derivations":
-			derivations_PL(cl);
+			derivations_PL();
 			break;
 		default:
 			cl.clErr("Unknown command: " + cl.helpCommand);
 		}
 	}
 
-	private static void execute_FOL(CommandLine cl) {
+	private void execute_FOL() {
 		if (cl.helpCommand == null) {
-			usage_FOL();
+			man(out);
 			return;
 		}
 		switch (cl.helpCommand) {
 		case "help":
-			usage_FOL();
+			man(out);
 			break;
 		case "check":
 			Check_FOL.describe(cl);
 			break;
 		case "formulas":
-			formulas_FOL(cl);
+			formulas_FOL();
 			break;
 		case "derivations":
-			derivations_FOL(cl);
+			derivations_FOL();
 			break;
 		default:
 			cl.clErr("Unknown command: " + cl.helpCommand);
 		}
 	}
 
-	public static void execute(CommandLine cl) {
+	@Override
+	public void execute() {
 		switch (cl.lang) {
 		case PL:
-			execute_PL(cl);
+			execute_PL();
 			break;
 		case FOL:
-			execute_FOL(cl);
+			execute_FOL();
 			break;
+		default:
+			throw new RuntimeException("unreachable");
+		}
+	}
+
+	@Override
+	public String name() {
+		return "lap";
+	}
+
+	@Override
+	public String shortDescription() {
+		String result = "Logic, Algorithms, Proof tool (language: ";
+		switch (cl.lang) {
+		case PL:
+			result += "Propositional Logic";
+			break;
+		case FOL:
+			result += "First Order Logic";
+			break;
+		default:
+			throw new RuntimeException("unreachable");
+		}
+		result += ")";
+		return result;
+	}
+
+	@Override
+	public String synopsis() {
+		return bf("lap") + " [ " + ul("command") + " ] [ " + ul("options") + " ] [ " + ul("file") + "... ]";
+	}
+
+	private Block description_PL() {
+		Block commandBlock = sub(bf("Commands:"), cat( //
+				def(bf("help") + "    - ", par("print usage information")), //
+				def(bf("nnf") + "     - ", par("convert a propositional formula to negation normal form")), //
+				def(bf("cnf") + "     - ", par("convert a propositional formula to conjunctive normal form")), //
+				def(bf("dnf") + "     - ", par("convert a propositional formula to disjunctive normal form")), //
+				def(bf("tseytin") + " - ", par("convert a propositional formula to an equisatisfiable CNF formula")), //
+				def(bf("dpll") + "    - ", par("apply the DPLL algorithm to a CNF formula")), //
+				def(bf("sat") + "     - ", par("determine if a propositional formula is satisfiable")), //
+				def(bf("valid") + "   - ", par("determine if a propositional formula is valid (a tautology)")), //
+				def(bf("equiv") + "   - ", par("determine whether two propositional formulas are equivalent")), //
+				def(bf("check") + "   - ", par("check a natural deduction derivation"))));
+		Block optBlock = sub(bf("General Options:"), cat( //
+				optEncoding(), optHighlight(), optLang(), optPlain(), optVerbose(), optVersion()));
+		Block langBlock = sub(bf("Languages:"), cat( //
+				def(bf("pl") + "   - ", par("propositional logic (default)")), //
+				def(bf("fol") + "  - ", par("first order logic"))));
+		Block infoBlock = cat( //
+				par("Type ", bf("lap help "), ul("command"), " for detailed help on a specific command."), //
+				par("Type ", bf("lap help formulas"), " for formula syntax."), //
+				par("Type ", bf("lap help derivations"), " for derivation syntax."), //
+				par("Insert ", bf("-lang "), ul("language"), " after ", bf("help"), " to specify language."));
+		return seq(commandBlock, optBlock, langBlock, infoBlock);
+	}
+
+	private Block description_FOL() {
+		Block commandBlock = sub(bf("Commands:"), cat( //
+				def(bf("help") + "    - ", par("print usage information")), //
+				def(bf("check") + "   - ", par("check a natural deduction derivation"))));
+		Block optBlock = sub(bf("General Options:"), cat( //
+				optEncoding(), optHighlight(), optLang(), optPlain(), optVerbose(), optVersion()));
+		Block langBlock = sub(bf("Languages:"), cat( //
+				def(bf("pl") + "   - ", par("propositional logic (default)")), //
+				def(bf("fol") + "  - ", par("first order logic"))));
+		Block infoBlock = cat( //
+				par("Type ", bf("lap help "), ul("command"), " for detailed help on a specific command."), //
+				par("Type ", bf("lap help formulas"), " for formula syntax."), //
+				par("Type ", bf("lap help derivations"), " for derivation syntax."), //
+				par("Insert ", bf("-lang "), ul("language"), " after ", bf("help"), " to specify language."));
+		return seq(commandBlock, optBlock, langBlock, infoBlock);
+	}
+
+	@Override
+	public Block description() {
+		switch (cl.lang) {
+		case PL:
+			return description_PL();
+		case FOL:
+			return description_FOL();
 		default:
 			throw new RuntimeException("unreachable");
 		}
