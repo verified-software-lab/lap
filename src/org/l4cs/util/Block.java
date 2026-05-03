@@ -1,5 +1,7 @@
 package org.l4cs.util;
 
+import java.io.PrintStream;
+
 /**
  * Blocks are used to create structured textual output, e.g., for a help message
  * or man page. Text is organized into blocks. Blocks may themselves contain
@@ -18,6 +20,10 @@ public abstract class Block {
 	@Override
 	public String toString() {
 		return render(0).toString();
+	}
+
+	public void print(PrintStream out) {
+		out.print(this);
 	}
 
 	/**

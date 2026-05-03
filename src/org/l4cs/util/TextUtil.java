@@ -13,6 +13,7 @@ public class TextUtil {
 	public static final String AND = "\u2227"; // latex \wedge
 	public static final String OR = "\u2228"; // latex \vee
 	public static final String IMPLIES = "\u2192"; // latex \rightarrow
+	public static final String IFF = "\u2194"; // latex \leftrightarrow (iff)
 	public static final String NOT = "\u00AC"; // latex \neg
 	public static final String TOP = "\u22A4"; // latex \top
 	public static final String BOT = "\u22A5"; // latex \bot

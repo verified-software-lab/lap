@@ -1,5 +1,7 @@
 package org.l4cs.cli;
 
+import static org.l4cs.util.TextUtil.Encoding.UNICODE;
+
 import org.l4cs.fol.nd.FOLRule;
 import org.l4cs.pl.nd.Rule;
 import org.l4cs.util.Block;
@@ -12,56 +14,63 @@ public class Help extends Command {
 	}
 
 	private void formulas_PL() {
-		out.println("PL Formula syntax:");
-		out.println();
-		out.println("Propositions are identifiers as in C or Java programs.");
-		out.println("An identifier starts with a letter or underscore, which is");
-		out.println("followed by any number of letters, digits, and underscores");
-		out.println();
-		out.println("Connectives and primitives can be represented in multiple ways:");
-		out.println("  - NOT     : NOT ! " + TextUtil.NOT);
-		out.println("  - AND     : AND & &&" + TextUtil.AND);
-		out.println("  - OR      : OR | ||" + TextUtil.OR);
-		out.println("  - IMPLIES : IMPLIES -> " + TextUtil.IMPLIES);
-		out.println("  - IFF     : IFF <-> " + "\u2194");
-		out.println("  - FALSE   : false " + TextUtil.BOT);
-		out.println("  - TRUE    : true " + TextUtil.TOP);
-		out.println();
-		out.println("Operator precedence (highest first): NOT, AND, OR, IMPLIES, IFF.");
-		out.println("Parentheses (\"(...)\") can also be used for grouping.");
+		boolean uni = TextUtil.encoding() == UNICODE;
+		sub(bf("LAP Formula Syntax: Propositional Logic"), //
+				seq(par("Propositions are identifiers as in C or Java programs. ",
+						"An identifier starts with a letter or underscore, which is ",
+						"followed by any number of letters, digits, and underscores."), //
+						cat(par("Connectives and primitives can be represented in multiple ways. ",
+								"The following list shows all of the ways, and is ordered by ",
+								"operator precedence, from highest to lowest:"),
+								fix(bf("  NOT     !    " + (uni ? TextUtil.NOT : ""))),
+								fix(bf("  AND     &    &&   " + (uni ? TextUtil.AND : ""))),
+								fix(bf("  OR      |    ||   " + (uni ? TextUtil.OR : ""))),
+								fix(bf("  IMPLIES ->   " + (uni ? TextUtil.IMPLIES : ""))),
+								fix(bf("  IFF     <->  " + (uni ? TextUtil.IFF : ""))),
+								fix(bf("  false   " + (uni ? TextUtil.BOT : ""))),
+								fix(bf("  true    " + (uni ? TextUtil.TOP : "")))),
+						par("Binary operators are right associative.  ",
+								"Parentheses " + bf("(...)") + " can also be used for grouping.  ",
+								"White space is ignored (except to separate keywords and identifiers).")))
+				.print(out);
 	}
 
 	private void formulas_FOL() {
-		out.println("FOL Formula syntax:");
-		out.println();
-		out.println("Identifiers are as in C or Java programs.");
-		out.println("An identifier starts with a letter or underscore, which is");
-		out.println("followed by any number of letters, digits, and underscores");
-		out.println();
-		out.println("Vocabulary conventions:");
-		out.println("  - Constants must be explicitly declared using \"const ...\".");
-		out.println("  - Any identifier can be used as a constant, predicate, or function symbol.");
-		out.println("  - Functions and predicates are ALWAYS immediately followed by '('; variables NEVER are.");
-		out.println("  - Functions occur ONLY in term context, whereas predicates occur ONLY in formula context.");
-		out.println();
-		out.println("Connectives and primitives can be represented in multiple ways:");
-		out.println("  - FORALL  : FORALL forall \u2200");
-		out.println("  - EXISTS  : EXISTS exists \u2203");
-		out.println("  - NOT     : NOT ! " + TextUtil.NOT);
-		out.println("  - AND     : AND & &&" + TextUtil.AND);
-		out.println("  - OR      : OR | ||" + TextUtil.OR);
-		out.println("  - IMPLIES : IMPLIES -> " + TextUtil.IMPLIES);
-		out.println("  - IFF     : IFF <-> " + "\u2194");
-		out.println("  - FALSE   : false " + TextUtil.BOT);
-		out.println("  - TRUE    : true " + TextUtil.TOP);
-		out.println();
-		out.println("Operator precedence (highest first): NOT, AND, OR, IMPLIES, IFF, Quantifiers.");
-		out.println("Note: Quantifiers have low precedence and MUST be followed by '.' after the variable.");
-		out.println("Example: forall x. P(x) & Q(x) means forall x. (P(x) & Q(x))");
-		out.println("Parentheses (\"(...)\") can also be used for grouping.");
+		boolean uni = TextUtil.encoding() == UNICODE;
+		sub(bf("LAP Formula Syntax: First Order Logic"), //
+				seq(//
+						par("Constants, predicate symbols, and function symbols are identifiers ",
+								"as in C or Java programs. ", //
+								"An identifier starts with a letter or underscore, which is ",
+								"followed by any number of letters, digits, and underscores.  ",
+								"Constants must be declared before they are used.  A declaration ",
+								"consists of the keyword " + bf("const") + " followed by a comma-separated ",
+								"list of identifiers, followed by a semicolon (" + bf(";") + ").  ", "Example: "),
+						fix("  " + bf("const c,d,e;")), //
+						cat(par("Connectives and primitives can be represented in multiple ways.  ",
+								"The following list shows all the ways and also the operator precedence, ",
+								"ordered from highest to lowest. "),
+								fix(bf("  NOT     !     " + (uni ? TextUtil.NOT : ""))),
+								fix(bf("  AND     &     &&   " + (uni ? TextUtil.AND : ""))),
+								fix(bf("  OR      |     ||   " + (uni ? TextUtil.OR : ""))),
+								fix(bf("  IMPLIES ->    " + (uni ? TextUtil.IMPLIES : ""))),
+								fix(bf("  IFF     <->   " + (uni ? TextUtil.IFF : ""))),
+								fix(bf("  FORALL forall " + (uni ? TextUtil.FORALL : ""))),
+								fix(bf("  EXISTS exists " + (uni ? TextUtil.EXISTS : ""))),
+								fix(bf("  false   " + (uni ? TextUtil.BOT : ""))),
+								fix(bf("  true    " + (uni ? TextUtil.TOP : "")))),
+						par("A quantified formula consists of a quantifier, followed by a variable, ",
+								"followed by a dot, followed by a formula. ", //
+								"Example: "),
+						fix("  " + bf("FORALL x . P(x)")), //
+						par("Binary operators are right associative.  ",
+								"Parentheses " + bf("(...)") + " can also be used for grouping.  ",
+								"White space is ignored (except to separate keywords and identifiers).")))
+				.print(out);
 	}
 
 	private void derivations_PL() {
+		// TODO: prettify this using blocks
 		out.println("PL Derivation syntax: ");
 		out.println();
 		out.println("The sequent symbol is denoted |- or ⊢");
@@ -95,6 +104,8 @@ public class Help extends Command {
 	}
 
 	private void derivations_FOL() {
+		// TODO: prettify this using blocks
+
 		out.println("FOL Derivation syntax: ");
 		out.println();
 		out.println("The sequent symbol is denoted |- or ⊢");
@@ -134,6 +145,7 @@ public class Help extends Command {
 	}
 
 	private void execute_PL() {
+		// TODO: update all of these
 		if (cl.helpCommand == null) {
 			man(out);
 			return;
@@ -167,7 +179,7 @@ public class Help extends Command {
 			Valid.describe(cl);
 			break;
 		case "check":
-			new Check_PL(cl).man(out);
+			new Check_PL(cl).man(out); // this is the right way
 			break;
 		case "formulas":
 			formulas_PL();
