@@ -32,7 +32,7 @@ public class Executor {
 			Valid.execute(cl);
 			break;
 		case "check":
-			Check_PL.execute(cl);
+			new Check_PL(cl).execute();
 			break;
 		default:
 			cl.clErr("unknown command: " + cl.command);

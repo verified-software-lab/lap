@@ -207,7 +207,7 @@ public class Help {
 			Valid.describe(cl);
 			break;
 		case "check":
-			new Check_PL().man(out);
+			new Check_PL(cl).man(out);
 			break;
 		case "formulas":
 			formulas_PL(cl);
