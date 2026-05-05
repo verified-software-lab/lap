@@ -7,6 +7,9 @@ import org.l4cs.fol.syntax.FOLFormula;
 import org.l4cs.fol.syntax.FOLFormulaFactory;
 import org.l4cs.util.TextUtil;
 
+/**
+ * @auther Yuxin Zhou
+ */
 public class Ax_FOL extends FOLRule {
 
 	public Ax_FOL(FOLFormulaFactory fac) {
