@@ -3,7 +3,9 @@ package org.l4cs.cli;
 import static org.l4cs.util.TextUtil.Encoding.UNICODE;
 
 import org.l4cs.fol.nd.FOLRule;
+import org.l4cs.pl.nd.DerivationFactory;
 import org.l4cs.pl.nd.Rule;
+import org.l4cs.pl.syntax.FormulaFactory;
 import org.l4cs.util.Block;
 import org.l4cs.util.TextUtil;
 
@@ -70,37 +72,39 @@ public class Help extends Command {
 	}
 
 	private void derivations_PL() {
-		// TODO: prettify this using blocks
-		out.println("PL Derivation syntax: ");
-		out.println();
-		out.println("The sequent symbol is denoted |- or ⊢");
-		out.println("Inference rules:");
-		out.println();
+		FormulaFactory fac = new FormulaFactory();
+		DerivationFactory df = new DerivationFactory(fac);
+		boolean uni = TextUtil.encoding() == UNICODE;
+		Block par1 = par("In the Natural Deduction proof system, judgments are ", bf("sequents"), ".  ",
+				"A sequent consists of a comma-separated list of formulas (possibly empty), ",
+				"followed by the sequent symbol, followed by a formula. ",
+				"The list preceding the sequent symbol denotes a set of formulas ", "known as the sequent's ",
+				bf("antecedent"), ".  ", "The formula occurring after the sequent symbol is the ", bf("succedent"),
+				". ", "The sequent symbol is denoted " + bf("|- ") + (uni ? "or " + bf(TextUtil.infers()) + " " : ""),
+				". ", "For formula syntax, type ", bf("lap help formulas"), ".");
+		Block par2 = cat(
+				par("A derivation is expressed as a sequence of steps. ", "Each step consists of a number (the step's ",
+						bf("label"), "), followed by a dot (", bf("."), "), ",
+						"followed by a sequent, then the name of an inference rule in parentheses, and, ",
+						"if the rule has premises, a comma-separated list of the labels of the premises. ",
+						"Finally, the step is terminated by a dot. ",
+						"White space is ignored.  In summary, the syntax for a step is:"), //
+				def("  ",
+						par(ul("label"), bf(" . "), ul("sequent"), " ", bf("("), ul("rule"), bf(")"), " ",
+								ul("premises"), " ", bf("."))), //
+				par("An example step:"), //
+				def("  ", par(TextUtil.boldOn(), "3. p, p -> q |- q (E->)1,2.", TextUtil.boldOff())));
+		Block b1 = seq(//
+				sub(bf("Derivation Syntax"), seq(par1, par2)), //
+				sub(bf("Inference Rules"), par("")));
+		b1.print(out);
 
-		org.l4cs.pl.syntax.FormulaFactory fac = new org.l4cs.pl.syntax.FormulaFactory();
-		org.l4cs.pl.nd.DerivationFactory df = new org.l4cs.pl.nd.DerivationFactory(fac);
+		// TODO: get the rules to return blocks next...
 		for (Rule rule : df.rules()) {
 			rule.printDescription(out);
 			out.println();
 		}
-		out.println("A derivation is expressed as a sequence of steps.");
-		out.println("Each step begins with a number, followed by '.'.");
-		out.println("This is followed by a sequent: a comma-separated list of");
-		out.println("formulas, followed by the sequent symbol, followed by a ");
-		out.println("formula.   This is followed by the name of a rule in ");
-		out.println("parentheses, e.g. \"(RAA)\".");
-		out.println("If the rule has premises, this is followed by a ");
-		out.println("comma-separated list of numbers, the line numbers of the");
-		out.println("premises.  Finally, the step is terminated by ';'.");
-		out.println("White space is ignored.");
-		out.println();
-		out.println("Each step has the form:");
-		out.println("  <label>. <sequent> (<rule>) <premises>;");
-		out.println();
-		out.println("Example step:");
-		out.println("  3. p, p -> q |- q (E->) 1, 2;");
-		out.println();
-		formulas_PL();
+
 	}
 
 	private void derivations_FOL() {
