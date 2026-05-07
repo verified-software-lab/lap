@@ -10,10 +10,8 @@ import static org.l4cs.fol.syntax.FOLFormula.FormulaKind.OR;
 
 import java.util.HashMap;
 import java.util.HashSet;
-// BEGIN MODIFICATION: REMOVING ARRAY/OBJECTS IMPORTS FOR FLYWEIGHT KEYS
 import java.util.Map;
 import java.util.Set;
-// END MODIFICATION: REMOVING ARRAY/OBJECTS IMPORTS FOR FLYWEIGHT KEYS
 
 //import org.l4cs.fol.syntax.Formula.FormulaKind;
 
@@ -21,46 +19,24 @@ import java.util.Set;
  * This factory class manages all First-Order Logic formulas and supports basic
  * operations on them. It relies on the correct implementation of equals() and
  * hashCode() for structural equivalence checks.
+ * 
+ * @author Yuxin Zhou
  */
 public class FOLFormulaFactory {
-	// Canonical representation is maintained for Predicate and Function Symbols.
+	// Canonical representation is maintained for Predicate and Function Symbols: Flyweight pattern.
 	private final Map<Integer, PredicateSymbol> predicateSymbolIdMap = new HashMap<>();
 	private final Map<String, PredicateSymbol> predicateSymbolNameMap = new HashMap<>();
 
-	// BEGIN MODIFICATION: REMOVING ALL FORMULA FLYWEIGHT CACHES
-	// REMOVED: Caches for BinaryFormula, NotFormula, QuantifiedFormula,
-	// PredicateApp
-	// ----------------------------------------------------------------------
-	// CANONICAL REPRESENTATION MAPS (Flyweight Pattern) ARE REMOVED
-	// ----------------------------------------------------------------------
-	// END MODIFICATION: REMOVING ALL FORMULA FLYWEIGHT CACHES
-
-	// Fields...
-
 	private FOLFalse falseFormula = new FOLFalse();
-	// BEGIN MODIFICATION: REMOVING TRUE FORMULA SIMPLIFICATION AND FLYWEIGHT
-	// Formula trueFormula = not(falseFormula); is removed to avoid simplification.
-	private FOLFormula trueFormula = new FOLNotFormula(falseFormula); // NOT(FALSE) instance
-	// END MODIFICATION: REMOVING TRUE FORMULA SIMPLIFICATION AND FLYWEIGHT
+	private FOLFormula trueFormula = new FOLNotFormula(falseFormula); 
 
-	/**
-	 * Map from proposition names to propositions. Each proposition can have an
-	 * optional name. This map maps a name to the proposition with that name. The
-	 * name of a proposition must be unique. Not every proposition has to have have
-	 * a name, but each has a unique ID number.
-	 */
-	// private Map<String, Proposition> propMap = new HashMap<>();//do it with
-	// variables + constant, here?
+	private final TermFactory termFactory; 
 
-	// New Field: TermFactory instance
-	private final TermFactory termFactory; // final
-
-	// Constructor Update
+	// Constructor 
 	public FOLFormulaFactory() {
-		this.termFactory = new TermFactory(); // Initialize the new factory
+		this.termFactory = new TermFactory(); 
 	}
-
-	// Accessor for the TermFactory
+	
 	public TermFactory termFactory() {
 		return termFactory;
 	}
@@ -77,18 +53,15 @@ public class FOLFormulaFactory {
 		return trueFormula;
 	}
 
-	// BEGIN MODIFICATION: REMOVING INNER KEY CLASSES
-	// REMOVED: Private static classes BinaryFormulaKey, NotFormulaKey,
-	// QuantifiedFormulaKey, PredicateAppKey
-	// END MODIFICATION: REMOVING INNER KEY CLASSES
-
 	// ----------------------------------------------------------------------
 	// Predicate Symbol Management
 	// ----------------------------------------------------------------------
 
 	/**
 	 * Returns the canonical PredicateSymbol with the given name and arity, creating
-	 * it if necessary. * @param name The name of the predicate symbol.
+	 * it if necessary. * 
+	 * 
+	 * @param name The name of the predicate symbol.
 	 * 
 	 * @param arity The arity (number of arguments) of the predicate symbol.
 	 * @return The canonical PredicateSymbol instance.
@@ -117,7 +90,9 @@ public class FOLFormulaFactory {
 	// ----------------------------------------------------------------------
 
 	/**
-	 * Creates a Predicate Application Formula. * @param predicate The predicate
+	 * Creates a Predicate Application Formula. 
+	 * 
+	 * @param predicate The predicate
 	 * symbol.
 	 * 
 	 * @param arguments The list of Terms that are arguments to the predicate.
@@ -131,9 +106,7 @@ public class FOLFormulaFactory {
 					+ predicate.arity() + " arguments, but received " + arguments.length);
 		}
 
-		// BEGIN MODIFICATION: PredicateApp is no longer flyweighted (canonical)
 		return new PredicateApp(predicate, arguments);
-		// END MODIFICATION: PredicateApp is no longer flyweighted (canonical)
 	}
 
 	// ----------------------------------------------------------------------
@@ -144,30 +117,20 @@ public class FOLFormulaFactory {
 		if (a == null || b == null)
 			throw new IllegalArgumentException("null formula");
 
-		// BEGIN MODIFICATION: Removed Flyweighting and Simplification
-		// Simplification logic (a.equals(falseFormula), etc.) is removed.
 		return new FOLBinaryFormula(AND, a, b);
-		// END MODIFICATION: Removed Flyweighting and Simplification
 	}
 
 	public FOLFormula or(FOLFormula a, FOLFormula b) {
 		if (a == null || b == null)
 			throw new IllegalArgumentException("null formula");
-
-		// BEGIN MODIFICATION: Removed Flyweighting and Simplification
-		// Simplification logic is removed.
 		return new FOLBinaryFormula(OR, a, b);
-		// END MODIFICATION: Removed Flyweighting and Simplification
 	}
 
 	public FOLFormula implies(FOLFormula a, FOLFormula b) {
 		if (a == null || b == null)
 			throw new IllegalArgumentException("null formula");
 
-		// BEGIN MODIFICATION: Removed Flyweighting and Simplification
-		// Simplification logic (a.equals(falseFormula), etc.) is removed.
 		return new FOLBinaryFormula(IMPLIES, a, b);
-		// END MODIFICATION: Removed Flyweighting and Simplification
 	}
 
 	   
@@ -189,10 +152,7 @@ public class FOLFormulaFactory {
 		if (a == null)
 			throw new IllegalArgumentException("null formula");
 
-		// BEGIN MODIFICATION: Removed Flyweighting and Simplification
-		// Simplification logic (a.equals(falseFormula)) is removed.
 		return new FOLNotFormula(a);
-		// END MODIFICATION: Removed Flyweighting and Simplification
 	}
 
 	// ----------------------------------------------------------------------
@@ -202,19 +162,13 @@ public class FOLFormulaFactory {
 	public FOLFormula exists(FOLFormula body, Variable v) {
 		if (body == null || v == null)
 			throw new IllegalArgumentException("null formula or variable");
-
-		// BEGIN MODIFICATION: QuantifiedFormula is no longer flyweighted
 		return new QuantifiedFormula(EXISTS, body, v);
-		// END MODIFICATION: QuantifiedFormula is no longer flyweighted
 	}
 
 	public FOLFormula forall(FOLFormula body, Variable v) {
 		if (body == null || v == null)
 			throw new IllegalArgumentException("null formula or variable");
-
-		// BEGIN MODIFICATION: QuantifiedFormula is no longer flyweighted
 		return new QuantifiedFormula(FORALL, body, v);
-		// END MODIFICATION: QuantifiedFormula is no longer flyweighted
 	}
 
 	// ----------------------------------------------------------------------
@@ -317,9 +271,8 @@ public class FOLFormulaFactory {
 
 	private void varsAux(FOLFormula a, Set<Variable> set) {
 		if (isPredicateApp(a))
-//nah
 			for (Term t : ((PredicateApp) a).arguments()) {
-				termFactory.varsAux(t, set);// double check@@
+				termFactory.varsAux(t, set);
 			}
 		else if (isNot(a)) {
 			varsAux(arg(a), set);
@@ -444,20 +397,15 @@ public class FOLFormulaFactory {
 		}
 	}
 
-	// CNF (Conjunctive Normal Form) ...
+	//
+	// CNF (Conjunctive Normal Form) ... to be added
+	//
+	//
 
-	/**
-	 * Given a literal a, return \bar{a}. If a is a proposition, returns a, if a is
-	 * !p, returns p.
-	 * 
-	 * @param a a literal
-	 * @return bar(a)
-	 */
-	public FOLFormula bar(FOLFormula a) {
-		return isAtomic(a) ? not(a) : arg(a);// do we keep this?
-	}
-
-	///////// new
+	
+	// ----------------------------------------------------------------------
+	// FOL: methods for substitutions and variable freeness
+	// ----------------------------------------------------------------------
 	/**
 	 * Tries to find a unique term 't' such that formula 'B_subst' is the result of
 	 * substituting 't' for 'x_var' in 'A_body'.
@@ -476,7 +424,7 @@ public class FOLFormulaFactory {
 
 		// t is a one-element array used to store the unique term found.
 		// This ensures all substitution sites yield the same term t.
-		Term[] t = new Term[1];// why[]??
+		Term[] t = new Term[1];
 
 		boolean success = findSubstitutionTermAux(A, x, B, t);
 
@@ -647,10 +595,10 @@ public class FOLFormulaFactory {
 		}
 	}
 
-	/// /////////new
+
 	/**
 	 * Recursive helper to find the substitution term t at the ~Term level~.
-	 * * @param t1 The original term.
+	 * @param t1 The original term.
 	 * 
 	 * @param x  The variable being substituted.
 	 * @param t2 The substituted term.
@@ -704,9 +652,6 @@ public class FOLFormulaFactory {
 		throw new RuntimeException("unreachable");
 	}
 	
-	////new
-	/// 
-	// Add to FormulaFactory.java
 
 	/** Checks if term 'target' appears anywhere inside formula 'f' */
 	public boolean occursIn(Term target, FOLFormula f) {

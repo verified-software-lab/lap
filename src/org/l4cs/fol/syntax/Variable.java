@@ -2,17 +2,18 @@
 package org.l4cs.fol.syntax;
 
 //import org.l4cs.util.TextUtil;
-
 //import org.l4cs.fol.syntax.Term.TermKind;
 
 /**
  * Represents a canonical Variable term in First-Order Logic (FOL).
+ * 
+ * @author Yuxin Zhou
  */
 public class Variable extends Term {
 
 	// Variables are canonical symbols, but must also be Terms.
 	private final FOLAbstractSymbol symbol;
-	// is an intentional design pattern called Composition (or Delegation).
+	// This is an intentional design pattern called Composition (or Delegation).
 	// The alternative would be Inheritance, but that leads to a problem in this
 	// specific case.
 
@@ -61,11 +62,11 @@ public class Variable extends Term {
 			super(name);
 		}
 	}/**
-		 * 3. Separation of Concerns: The AnonymousSymbol exists purely to house the
-		 * canonical identity logic for a Term that isn't a symbol in its own right
-		 * (like a FunctionSymbol is). It prevents us from having to expose
-		 * AbstractSymbol's constructor more broadly or complicate the Variable class
-		 * itself with inheritance gymnastics.
-		 */
+	 * Separation of Concerns: The AnonymousSymbol exists purely to house the
+	 * canonical identity logic for a Term that isn't a symbol in its own right
+	 * (like a FunctionSymbol is). It prevents us from having to expose
+	 * AbstractSymbol's constructor more broadly or complicate the Variable class
+	 * itself with inheritance gymnastics.
+	 */
 
 }

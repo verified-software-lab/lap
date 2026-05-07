@@ -7,6 +7,8 @@ import java.util.Arrays;
  * Term arguments. Its canonical identity is managed by a factory cache (like
  * the TermFactory's FunctionAppKey) and is based on its structure: the
  * predicate symbol and the arguments.
+ * 
+ * @author Yuxin Zhou
  */
 public class PredicateApp extends FOLFormula {
 

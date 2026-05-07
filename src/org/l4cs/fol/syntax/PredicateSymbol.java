@@ -4,6 +4,8 @@ import org.l4cs.util.TextUtil;
 
 /**
  * Represents a canonical Predicate Symbol (e.g., P, Q, LessThan) in FOL.
+ * 
+ * @author Yuxin Zhou
  */
 public class PredicateSymbol extends FOLAbstractSymbol {
 	
@@ -13,7 +15,7 @@ public class PredicateSymbol extends FOLAbstractSymbol {
 	 * Constructs a new PredicateSymbol. Should be called only by FormulaFactory (or TermFactory, for consistency).
 	 */
 	PredicateSymbol(String name, int arity) {
-		super(name); // Auto-assigns ID!!~~
+		super(name); // Will auto-assigns ID.
 		this.arity = arity;
 	}
 	
@@ -21,7 +23,6 @@ public class PredicateSymbol extends FOLAbstractSymbol {
 		return arity;
 	}
 	public String toString() {
-//		return name == null ? "p" + TextUtil.subscript(id) : name;//?? null ? "v" + 
 		return name() != null ? name() + "/" + arity : "P" + TextUtil.subscript(id()) + "/" + arity;
 	}
 

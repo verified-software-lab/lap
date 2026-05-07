@@ -11,11 +11,11 @@ import org.l4cs.fol.syntax.Term.TermKind;
  * Factory class responsible for creating and managing all Term objects
  * (Variables, Constants, FunctionApplications, FunctionSymbols) in FOL. *
  * Implements the Flyweight pattern for Variables, Constants, FunctionSymbols,
- * and FunctionApplications to ensure unique instances for structurally
+ * but not FunctionApplications to ensure unique instances for structurally
  * identical objects.
+ * 
+ * @author Yuxin Zhou
  * */
-// BEGIN MODIFICATION: Removing Flyweight components for FunctionApp
-// REMOVED: import java.util.Arrays;
 public class TermFactory {
 
 	/**
@@ -36,15 +36,8 @@ public class TermFactory {
 	private final Map<String, Constant> constantNameMap = new HashMap<>();
 	private final Map<String, Variable> variableNameMap = new HashMap<>();
 
-	// REMOVED: private final Map<FunctionAppKey, FunctionApp> functionAppCache = new HashMap<>();
-
-	/**
-	 * REMOVED: The inner class FunctionAppKey was here.
-	 */
-// END MODIFICATION: Removing Flyweight components for FunctionApp
-
 	public TermFactory() {
-		// nothing yet
+		
 	}
 
 	// -----------------------------------------------------------\
@@ -54,7 +47,7 @@ public class TermFactory {
 	/**
 	 * Returns the canonical FunctionSymbol with the given name and arity, creating
 	 * it if necessary.
-	 * * @param name  The name of the function symbol.
+	 * @param name  The name of the function symbol.
 	 * @param arity The arity (number of arguments) of the function symbol.
 	 * @return The canonical FunctionSymbol instance.
 	 * @throws IllegalArgumentException if a symbol with the same name but different
@@ -84,7 +77,7 @@ public class TermFactory {
 	/**
 	 * Returns the canonical Constant with the given name, creating it if necessary.
 	 * Constants are 0-ary functions.
-	 * * @param name The name of the constant.
+	 * @param name The name of the constant.
 	 * @return The canonical Constant instance.
 	 */
 	public Constant constant(String name) {
@@ -93,7 +86,7 @@ public class TermFactory {
 			constant = new Constant(name);
 			constantNameMap.put(name, constant);
 			constantIdMap.put(constant.id(), constant);
-		}//constant.id()
+		}
 		return constant;
 	}
 
@@ -107,7 +100,7 @@ public class TermFactory {
 
 	/**
 	 * Returns the canonical Variable with the given name, creating it if necessary.
-	 * * @param name The name of the variable.
+	 * @param name The name of the variable.
 	 * @return The canonical Variable instance.
 	 */
 	public Variable variable(String name) {
@@ -130,7 +123,7 @@ public class TermFactory {
 
 	/**
 	 * Creates a FunctionApplication term.
-	 * * @param symbol The function symbol.
+	 * @param symbol The function symbol.
 	 * @param args   The list of Terms that are arguments to the function.
 	 * @return The FunctionApplication Term.
 	 * @throws IllegalArgumentException if the number of arguments doesn't match the
@@ -142,10 +135,7 @@ public class TermFactory {
 					+ " arguments, but received " + args.length);
 		}
 
-// BEGIN MODIFICATION: FunctionApp is no longer flyweighted (canonical)
-		// REMOVED: Caching and key lookup logic.
 		return new FunctionApp(symbol, args);
-// END MODIFICATION: FunctionApp is no longer flyweighted (canonical)
 	}
 
 	// -----------------------------------------------------------\
@@ -168,7 +158,7 @@ public class TermFactory {
 		return vars(a).isEmpty();
 	}
 
-	// recursively, get a set of variables from a term!
+	// recursively, get a set of variables from a term.
 	public Set<Variable> vars(Term a) {
 		Set<Variable> set = new HashSet<>();
 		varsAux(a, set);

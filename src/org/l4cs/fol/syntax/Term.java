@@ -5,6 +5,8 @@ package org.l4cs.fol.syntax;
 /**
  * Abstract base class for all terms in First-Order Logic (FOL).
  * Note: Terms like Variable and Constant are also canonical symbols managed by the factory.
+ * 
+ * @author Yuxin Zhou
  */
 public abstract class Term {
 
@@ -30,7 +32,7 @@ public abstract class Term {
 	@Override
 	public abstract String toString();
 	
-	// New methods to expose AbstractSymbol properties via delegation/inheritance+?
+	// New methods to expose AbstractSymbol properties via delegation/inheritance.
 	public abstract int id();
 	public abstract String name();
 }

@@ -10,13 +10,15 @@ import org.l4cs.util.TextUtil; // Assuming TextUtil provides logical symbols lik
  * Represents a quantified Formula (Exists x A or Forall x A) in First-Order
  * Logic (FOL). Its canonical identity is based on its structure: the quantifier
  * kind, the quantified variable, and the formula body.
+ * 
+ * @author Yuxin Zhou
  */
 public class QuantifiedFormula extends FOLFormula {
 
 	private final Variable quantifiedV;
 	private final FOLFormula body;
 	// The FormulaKind is already stored in the superclass (Formula.kind)
-	// private FormulaKind kind;!!!
+	// private FormulaKind kind; //is not needed.
 
 	/**
 	 * Constructs a new QuantifiedFormula. Should be called only by FormulaFactory.
@@ -92,5 +94,5 @@ public class QuantifiedFormula extends FOLFormula {
 		}
 
 		return quantifierSymbol + quantifiedV.toString() + "." + b;
-	}//quantifiedV.toString()??
+	}
 }

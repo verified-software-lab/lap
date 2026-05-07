@@ -4,6 +4,8 @@ import org.l4cs.util.TextUtil;
 
 /**
  * Represents a canonical Function Symbol (e.g., f, g, sum) in FOL.
+ * 
+ * @author Yuxin Zhou
  */
 public class FunctionSymbol extends FOLAbstractSymbol {
 
@@ -22,9 +24,8 @@ public class FunctionSymbol extends FOLAbstractSymbol {
 	}
 
 	public String toString() {
-		// return name() == null ? "f" + TextUtil.subscript(id) : name();
 		return name() != null ? name() + "/" + arity : "f" + TextUtil.subscript(id()) + "/" + arity;
 	}
-//id, equals (), and so on, are already in AbstractSymbol.! 
+	//id, equals (), and so on, are already in AbstractSymbol.
 
 }

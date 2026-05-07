@@ -6,6 +6,8 @@ import java.util.Arrays;
  * Represents a composite Function Application term (e.g., f(a, x)). Its
  * canonical identity is managed by the TermFactory's FunctionAppKey cache, and
  * is based on its structure: the function symbol and the argument terms.
+ * 
+ * @author Yuxin Zhou
  */
 public class FunctionApp extends Term {
 
@@ -26,7 +28,6 @@ public class FunctionApp extends Term {
 	}
 
 	public FunctionSymbol functionSymbol() {
-		// Renamed from function() for consistency
 		return this.function;
 	}
 
@@ -69,7 +70,7 @@ public class FunctionApp extends Term {
 		// 2. Check Arguments: Must be structurally identical (element by element)
 		// Arrays.equals checks for same length AND element equality (using
 		// element.equals())
-		return Arrays.equals(this.arguments, that.arguments);//!!!
+		return Arrays.equals(this.arguments, that.arguments);
 	}
 
 	// -----------------------------------------------------------
@@ -106,5 +107,5 @@ public class FunctionApp extends Term {
 		sb.append(")");
 		return sb.toString();
 	}
-	//could: return function.toString() + arguments;!?
+	//could instead: return function.toString() + arguments;
 }
