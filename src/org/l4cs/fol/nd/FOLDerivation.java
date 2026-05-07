@@ -12,6 +12,8 @@ import org.l4cs.pl.nd.Derivation;
  * A derivation in the proof system Natural Deduction for FOL Logic. A
  * derivation is a recursive data structure. It consists of a rule, a
  * conclusion, and a sequence of 0 or more subderivations.
+ * 
+ * @author Yuxin Zhou
  */
 public class FOLDerivation {
 

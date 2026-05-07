@@ -13,7 +13,34 @@ import org.l4cs.util.TextUtil;
 /**
  * Implements the Universal Elimination (E∀) rule. Rule: From Γ ⊢ ∀x φ, conclude
  * Γ ⊢ φ[t/x].
+ * 
+ * 
+ * Represents the natural deduction inference rule $\forall$-Elimination (ElimForall) for
+ * First-Order Logic (FOL).
+ * <p>
+ * This rule allows the deduction of a conclusion $C$ from the knowledge that a
+ * property holds universally ($\forall x. A(x)$), provided that we can derive
+ * $C$ assuming a specific instance of that property $A(c)$.
+ * </p>
+ * <h3>Formal Structure:</h3>
+ * <p>
+ * We derive a conclusion $B$ from two premises:
+ * <ol>
+ *   <li>$\forall x. A(x)$ (The universal premise)</li>
+ *   <li>$B$ (The derived conclusion, assuming $A(c)$ holds for some constant $c$)</li>
+ * </ol>
+ * <p>
+ * In practice, the rule states: If we know $\forall x. A(x)$, and we can deduce $B$ from $A(c)$, then $B$ must hold universally.
+ * </p>
+ * <p>
+ * The rule is often simplified in proofs to: If $\forall x. A(x)$ is true, and $B$ is derived assuming $A(c)$ is true, then $B$ is true (the constant $c$ is substituted).
+ * </p>
+ *
+ * @implNote This implementation focuses on checking the premises and the derived conclusion structure.
+ *
+ * @author (Generated Example)
  */
+
 public class ElimForall extends FOLRule {
 
 	public ElimForall(FOLFormulaFactory fac) {

@@ -7,6 +7,13 @@ import org.l4cs.fol.syntax.FOLFormula;
 import org.l4cs.fol.syntax.FOLFormulaFactory;
 import org.l4cs.util.TextUtil;
 
+/**
+ * Inference rule introduce-or in natural deduction for first-order logic.
+ * Actually an instance of this class can represent one of two rules:
+ * introduce-or-1 or introduce-or-2.
+ * 
+ * @author Yuxin Zhou
+ */
 public class IntroOr_FOL extends FOLRule {
 
 	/**

@@ -5,6 +5,11 @@ import java.util.Map;
 
 import org.l4cs.util.TextUtil;
 
+/**
+ * An object used to print a derivation in "tuple" format.
+ * 
+ * @author Yuxin Zhou
+ */
 public class TuplePrinter {
 
 	private PrintStream out;

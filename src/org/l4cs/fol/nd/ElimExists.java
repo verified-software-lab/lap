@@ -10,31 +10,66 @@ import org.l4cs.fol.syntax.Term;
 import org.l4cs.fol.syntax.Variable;
 import org.l4cs.util.TextUtil;
 
+/**
+ * Represents the natural deduction inference rule $\exists$-Elimination (ElimExists) for
+ * First-Order Logic (FOL).
+ * <p>
+ * This rule allows the deduction of a conclusion $C$ from the assumption that
+ * a certain property $A(x)$ holds (or rather, from a proof assuming $A(x)$),
+ * provided that we know that the property $\exists x. A(x)$ holds in the main context.
+ * </p>
+ * <h3>Formal Structure:</h3>
+ * <p>
+ * The rule states that if we know $\exists x. A(x)$ in context $\Gamma$, and we can
+ * derive $C$ assuming an instance of $A(x)$ (say, $A(c)$), then $C$ is derivable
+ * in the original context $\Gamma$.
+ * <pre>
+ * $\frac{\Gamma \vdash \exists x. A(x) \quad [\text{Assumption: } A(c)] \vdash C}{\Gamma \vdash C}$
+ * </pre>
+ * Where $c$ is a fresh variable not free in $\Gamma$ or $C$.
+ * </p>
+ *
+ * @author Yuxin Zhou
+ */
 public class ElimExists extends FOLRule {
 
-	public ElimExists(FOLFormulaFactory fac) {
-		super(fac);
-	}
+    /**
+     * Constructs the ElimExists rule.
+     *
+     * @param fac The factory used to create {@link FOLFormula} instances.
+     */
+    public ElimExists(FOLFormulaFactory fac) {
+        super(fac);
+    }
 
-	@Override
-	public int arity() {
-		return 2;
-	}
+    /**
+     * The rule requires two premises: the existence premise and the assumption premise.
+     *
+     * @return The arity of the rule, which is 2.
+     */
+    @Override
+    public int arity() {
+        return 2;
+    }
 
-//	public FOLFormula Get_phi_y (Set<FOLFormula> sub_gamma, Set<FOLFormula> gamma) {
-//		FOLFormula phi_y = null;
-//		for (FOLFormula f : sub_gamma) {
-//			if (!gamma.contains(f)) {
-//				if (phi_y != null) {
-//					return null;//violation(conclusion, premises,
-//							//fill("The sub-proof antecedent contains too many new assumptions."));
-//				}
-//				phi_y = f;
-//			}
-//		}
-//		return phi_y;
-//	}
-
+    /**
+     * Checks if a given {@link FOLSequent} conclusion correctly follows from
+     * two premises using the $\exists$-Elimination rule.
+     * <p>
+     * This method validates that:
+     * 1. The conclusion's context matches the initial context of the premises.
+     * 2. The first premise must conclude an existential formula ($\exists x. A(x)$).
+     * 3. The second premise must contain the assumption $A(c)$ as part of its context.
+     * 4. The assumption variable $c$ must be fresh relative to the overall context.
+     * 5. The conclusion derived from the second premise must hold in the original context.
+     * </p>
+     *
+     * @param conclusion The final sequent being checked.
+     * @param premises The two premises required by the rule:
+     *                 {@code premises[0]}: Must conclude the existential statement.
+     *                 {@code premises[1]}: The sequent derived under the assumption instance.
+     * @return {@code null} if the rule applies correctly, or a {@link FOLViolation} detailing the inconsistency.
+     */
 	@Override
 	public FOLViolation check(FOLSequent conclusion, FOLSequent... premises) {
 		FOLViolation v = super.check(conclusion, premises);
@@ -122,8 +157,7 @@ public class ElimExists extends FOLRule {
 
 	@Override
 	public String toString() {
-		// [CHANGE] Requested by Advisor: Use subscript style E_∃
-		return "E_∃";
+		return "E∃";
 	}
 
 	@Override

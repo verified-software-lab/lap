@@ -7,6 +7,12 @@ import org.l4cs.fol.syntax.FOLFormula;
 import org.l4cs.fol.syntax.FOLFormulaFactory;
 import org.l4cs.util.TextUtil;
 
+/**
+ * Inference rule eliminate-and in natural deduction for first-order logic.
+ * Actually two rules are represented: eliminate-and-1 and eliminate-and-2.
+ * 
+ * @author Yuxin Zhou
+ */
 public class ElimAnd_FOL extends FOLRule {
 
 	/**
@@ -14,6 +20,13 @@ public class ElimAnd_FOL extends FOLRule {
 	 */
 	int i;
 
+	/**
+	 * Constructs an eliminate-and rule with the specified index.
+	 * 
+	 * @param fac the formula factory for creating and manipulating formulas
+	 * @param i   either 1 or 2, indicating which conjunct to extract
+	 * @throws IllegalArgumentException if i is not 1 or 2
+	 */
 	public ElimAnd_FOL(FOLFormulaFactory fac, int i) {
 		super(fac);
 		if (i != 1 && i != 2)
@@ -26,6 +39,18 @@ public class ElimAnd_FOL extends FOLRule {
 		return 1;
 	}
 
+	/**
+	 * Checks whether the premises correctly support the conclusion for the
+	 * eliminate-and rule. The premise must have an AND formula as its succedent,
+	 * and the conclusion's succedent must be the specified conjunct (1st or 2nd)
+	 * of that AND formula. Both the premise and conclusion must have the same
+	 * antecedent (context).
+	 * 
+	 * @param conclusion the proposed conclusion sequent
+	 * @param premises   the premise sequent (exactly one)
+	 * @return {@code null} if the rule is correctly applied, otherwise a
+	 *         {@link FOLViolation} describing the error
+	 */
 	@Override
 	public FOLViolation check(FOLSequent conclusion, FOLSequent... premises) {
 		FOLViolation v = super.check(conclusion, premises);
@@ -48,11 +73,22 @@ public class ElimAnd_FOL extends FOLRule {
 		return null;
 	}
 
+	/**
+	 * Returns a short name for this rule.
+	 * 
+	 * @return the string "E∧i" where i is 1 or 2
+	 */
 	@Override
 	public String toString() {
 		return "E" + AND + i;
 	}
 
+	/**
+	 * Prints a detailed description of this rule to the given output stream,
+	 * including the rule format and an explanation of how it works.
+	 * 
+	 * @param out the PrintStream to which the description is written
+	 */
 	@Override
 	public void printDescription(PrintStream out) {
 		out.println("Rule " + this + " (\"eliminate and " + i + "\"):");
@@ -66,11 +102,24 @@ public class ElimAnd_FOL extends FOLRule {
 		out.print(fill(buf));
 	}
 
+	/**
+	 * Determines whether this rule is equal to the given object. Two
+	 * eliminate-and rules are equal if they have the same index i.
+	 * 
+	 * @param obj the object to compare with
+	 * @return {@code true} if obj is an ElimAnd_FOL with the same index,
+	 *         {@code false} otherwise
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		return obj instanceof ElimAnd_FOL && ((ElimAnd_FOL) obj).i == i;
 	}
 
+	/**
+	 * Returns a hash code for this rule based on the class and the index.
+	 * 
+	 * @return the hash code
+	 */
 	@Override
 	public int hashCode() {
 		return ElimAnd_FOL.class.hashCode() + i;

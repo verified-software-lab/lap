@@ -10,17 +10,64 @@ import org.l4cs.fol.syntax.Term;
 import org.l4cs.fol.syntax.Variable;
 import org.l4cs.util.TextUtil;
 
+/**
+ * Represents the natural deduction inference rule $\forall$-Introduction (IntroForall) for
+ * First-Order Logic (FOL).
+ * <p>
+ * This rule allows the generalization of a conclusion from a specific instance to a
+ * universal statement.
+ * </p>
+ * <h3>Formal Structure:</h3>
+ * <p>
+ * If we can derive a conclusion $B$ in context $\Gamma$ by assuming $A(a)$ holds,
+ * where $a$ is a constant **newly introduced** (and thus arbitrary) and not free
+ * in $\Gamma$ or $B$, then we can conclude that $\forall x. B$ holds in the original context $\Gamma$.
+ * </p>
+ * <pre>
+ * $\frac{\Gamma, A(a) \vdash B}{\Gamma \vdash \forall x. B}$
+ * </pre>
+ * Where $a$ is a fresh constant, and $\forall x$ is the universal quantifier.
+ * <p>
+ * **Crucial Constraint:** The derivation of $B$ must not depend on any assumption
+ * that relies on the specific properties of the constant $a$ (otherwise, the
+ * generalization is invalid).
+ * </p>
+ *
+ * @author (Generated Example)
+ */
 public class IntroForall extends FOLRule {
 
+    /**
+     * Constructs the IntroForall rule.
+     *
+     * @param fac The factory used to create {@link FOLFormula} instances.
+     */
     public IntroForall(FOLFormulaFactory fac) {
         super(fac);
     }
 
+    /**
+     * The rule requires one premise: the derivation from the assumption instance.
+     *
+     * @return The arity of the rule, which is 1.
+     */
     @Override
     public int arity() {
         return 1;
     }
 
+    /**
+     * Checks if a derivation is valid under the $\forall$-Introduction rule.
+     * Requires:
+     * 1. The assumption A(a) must be present in the set of assumptions for the derivation of B.
+     * 2. The conclusion B must be derivable from the assumptions minus A(a).
+     * 3. The final conclusion must be $\forall x. B$.
+     *
+     * @param derivation The set of assumptions leading to the conclusion.
+     * @param assumptionAssumption The specific assumption used for generalization (e.g., P(a)).
+     * @param finalConclusion The overall desired conclusion ($\forall x. B$).
+     * @return True if the rule is correctly applied.
+     */
     @Override
     public FOLViolation check(FOLSequent conclusion, FOLSequent... premises) {
         FOLViolation v = super.check(conclusion, premises);

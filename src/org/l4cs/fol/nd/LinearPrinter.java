@@ -8,7 +8,14 @@ import java.util.Map;
 import org.l4cs.util.TextUtil;
 
 /**
- * A class used to print this derivation in a linear format.
+ * A class used to print this derivation in a linear format. There is one step
+ * per line and no indentation. The lines are numbered, and each line ends with
+ * the rule and the numbers of the premises. The premises must precede where
+ * they are used. A step may be used as a premise of multiple future steps,
+ * i.e., there can be "sharing" of premises. Hence the steps may be thought of
+ * as a "DAG" rather than a tree.
+ * 
+ * @author Yuxin Zhou
  */
 class LinearPrinter {
 

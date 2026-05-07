@@ -5,6 +5,13 @@ import java.util.Map;
 
 import org.l4cs.util.TextUtil;
 
+/**
+ * An object used to print a derivation in hierarchical format. This is a
+ * textual representation of a tree with one node on each line, root at top, and
+ * the text for the children nodes indented from the parent.
+ * 
+ * @author Yuxin Zhou
+ */
 public class HierarchyPrinter {
 
 	private PrintStream out;

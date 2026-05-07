@@ -6,6 +6,11 @@ import org.l4cs.fol.syntax.FOLFormula;
 import org.l4cs.fol.syntax.FOLFormulaFactory;
 import org.l4cs.util.TextUtil;
 
+/**
+ * Inference rule introduce-implies in natural deduction for first-order logic.
+ * 
+ * @author Yuxin Zhou
+ */
 public class IntroImplies_FOL extends FOLRule {
 
 	public IntroImplies_FOL(FOLFormulaFactory fac) {

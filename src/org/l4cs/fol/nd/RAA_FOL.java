@@ -6,6 +6,12 @@ import org.l4cs.fol.syntax.FOLFormula;
 import org.l4cs.fol.syntax.FOLFormulaFactory;
 import org.l4cs.util.TextUtil;
 
+/**
+ * The inference rule "reductio ad absurdum" in natural deduction for
+ * first-order logic.
+ * 
+ * @author Stephen Siegel
+ */
 public class RAA_FOL extends FOLRule {
 
 	public RAA_FOL(FOLFormulaFactory fac) {

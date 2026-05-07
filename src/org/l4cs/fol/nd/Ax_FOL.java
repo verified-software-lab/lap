@@ -8,10 +8,17 @@ import org.l4cs.fol.syntax.FOLFormulaFactory;
 import org.l4cs.util.TextUtil;
 
 /**
- * @auther Yuxin Zhou
+ * Inference rule Ax of natural deduction for first-order logic.
+ * 
+ * @author Yuxin Zhou
  */
 public class Ax_FOL extends FOLRule {
 
+	/**
+	 * Constructs the Ax rule with the specified formula factory.
+	 * 
+	 * @param fac the formula factory for creating and manipulating formulas
+	 */
 	public Ax_FOL(FOLFormulaFactory fac) {
 		super(fac);
 	}
@@ -21,6 +28,15 @@ public class Ax_FOL extends FOLRule {
 		return 0;
 	}
 
+	/**
+	 * Checks whether the Ax rule is correctly applied. The conclusion is valid
+	 * if its succedent appears in its antecedent (context).
+	 * 
+	 * @param conclusion the proposed conclusion sequent
+	 * @param premises   no premises are required for the Ax rule (empty array)
+	 * @return {@code null} if the rule is correctly applied, otherwise a
+	 *         {@link FOLViolation} describing the error
+	 */
 	@Override
 	public FOLViolation check(FOLSequent conclusion, FOLSequent... premises) {
 		FOLViolation v = super.check(conclusion, premises);
@@ -34,11 +50,22 @@ public class Ax_FOL extends FOLRule {
 		return null;
 	}
 
+	/**
+	 * Returns a string representation of this rule.
+	 * 
+	 * @return the string "Ax"
+	 */
 	@Override
 	public String toString() {
 		return "Ax";
 	}
 
+	/**
+	 * Prints a detailed description of this rule to the given output stream,
+	 * including the rule format and an explanation of how it works.
+	 * 
+	 * @param out the PrintStream to which the description is written
+	 */
 	@Override
 	public void printDescription(PrintStream out) {
 		out.println("Rule Ax:");
@@ -54,11 +81,24 @@ public class Ax_FOL extends FOLRule {
 		out.println();
 	}
 
+	/**
+	 * Determines whether this rule is equal to the given object. Two Ax rules
+	 * are always equal.
+	 * 
+	 * @param obj the object to compare with
+	 * @return {@code true} if obj is an Ax_FOL instance, {@code false}
+	 *         otherwise
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		return obj instanceof Ax_FOL;
 	}
 
+	/**
+	 * Returns a hash code for this rule.
+	 * 
+	 * @return the hash code
+	 */
 	@Override
 	public int hashCode() {
 		return Ax_FOL.class.hashCode();

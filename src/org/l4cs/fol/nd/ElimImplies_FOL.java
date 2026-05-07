@@ -7,6 +7,11 @@ import org.l4cs.fol.syntax.FOLFormula;
 import org.l4cs.fol.syntax.FOLFormulaFactory;
 import org.l4cs.util.TextUtil;
 
+/**
+ * Inference rule eliminate-implies in natural deduction for first-order logic.
+ * 
+ * @author Yuxin Zhou
+ */
 public class ElimImplies_FOL extends FOLRule {
 
 	public ElimImplies_FOL(FOLFormulaFactory fac) {

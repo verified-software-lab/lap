@@ -11,8 +11,11 @@ import org.l4cs.fol.syntax.FOLFormula;
 import org.l4cs.fol.syntax.FOLNotFormula;
 import org.l4cs.util.TextUtil;
 
+
 /**
- * Prints a derivation in Fitch format.
+ * An object used to print a derivation in Fitch format.
+ * 
+ * @author Yuxin Zhou
  */
 public class FitchPrinter {
 
@@ -20,6 +23,13 @@ public class FitchPrinter {
 	private ArrayList<String[]> table = new ArrayList<>();
 	private Map<FOLDerivation, Integer> seen = new HashMap<>();
 
+	/**
+	 * Constructs a new instance based on the given derivation and prints the
+	 * derivation in Fitch format.
+	 * 
+	 * @param out        the output stream, where the output will be sent
+	 * @param derivation the derivation to print
+	 */
 	FitchPrinter(PrintStream out, FOLDerivation derivation) {
 		// first write the context, one formula per line:
 		writeContext(1, derivation.conclusion.antecedent());
@@ -133,15 +143,10 @@ public class FitchPrinter {
 			writeHorizontalLine(depth + 1);
 			premiseLines[2] = write(depth + 1, d.subderivations[2]);
 		} else if (d.rule instanceof ElimExists) {
-			// [CHANGE] Implementation for Existential Elimination (Fitch style)
-			// Premise 0 is the existential formula: exists x. P(x)
-			// Premise 1 is the sub-derivation from [P(y)] to the conclusion
 			premiseLines[0] = write(depth, d.subderivations[0]);
 
-			// Extract the witness formula (the assumption of the sub-derivation)
-			// In natural deduction, the sub-derivation's antecedent contains the new
-			// witness.
-			// We find the formula that was added to the antecedent in subderivations[1].
+			// Find the witness formula by identifying the new assumption in the
+			// sub-derivation context
 			Set<FOLFormula> ant0 = d.subderivations[0].conclusion.antecedent();
 			Set<FOLFormula> ant1 = d.subderivations[1].conclusion.antecedent();
 			FOLFormula witnessAssumption = null;
@@ -151,16 +156,14 @@ public class FitchPrinter {
 					break;
 				}
 			}
-
-			// If we couldn't find a new formula,
-			// we fallback to showing the conclusion of the first step of the sub-derivation
-			if (witnessAssumption == null) {
-				witnessAssumption = d.subderivations[1].conclusion.succedent();
+			if (witnessAssumption != null) {
+				// E-Exists: Only indent if a new witness assumption exists in the sub-proof.
+				writeUnnumberedLine(depth + 1, witnessAssumption);
+				writeHorizontalLine(depth + 1);
+				premiseLines[1] = write(depth + 1, d.subderivations[1]);
+			} else {
+				premiseLines[1] = write(depth, d.subderivations[1]);
 			}
-
-			writeUnnumberedLine(depth + 1, witnessAssumption);
-			writeHorizontalLine(depth + 1);
-			premiseLines[1] = write(depth + 1, d.subderivations[1]);
 		} else {
 			for (int i = 0; i < n; i++)
 				premiseLines[i] = write(depth, d.subderivations[i]);
