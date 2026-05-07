@@ -4,6 +4,8 @@ package org.l4cs.fol.syntax;
 
 /**
  * Represents a canonical Constant term in First-Order Logic (FOL).
+ * 
+ * @author Yuxin Zhou
  */
 public class Constant extends Term {
 

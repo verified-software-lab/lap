@@ -9,6 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * unique ID for the Flyweight Pattern and the optional name. (Base class for
  * all canonical symbols—Variables, Constants, Functions, Predicates—handling
  * the mandatory, unique ID.)
+ * 
+ * @author Yuxin Zhou
  */
 public abstract class FOLAbstractSymbol {
 

@@ -4,6 +4,11 @@ import static org.l4cs.fol.syntax.FOLFormula.FormulaKind.NOT;
 
 import org.l4cs.util.TextUtil;
 
+/**
+ * The class NotFormula represents a formula of the form "not phi", where phi is any
+ *
+ * @author Stephen Siegel
+ */
 public class FOLNotFormula extends FOLFormula {
 
 	private FOLFormula arg;

@@ -100,7 +100,7 @@ public class ElimForall extends FOLRule {
 
 	@Override
 	public String toString() {
-		return "E∀";
+		return "E_∀";
 	}
 
 	@Override

@@ -71,13 +71,12 @@ public class IntroExists extends FOLRule {
 
     @Override
     public String toString() {
-        return "∃I";
+        return "∃_I";
     }
 
     @Override
     public void printDescription(PrintStream out) {
         out.println("Rule " + this + " (\"introduce exists\") :");
-        // Using requested symbols for the description
         String s1 = "Γ ⊢ φ[t/x]";
         String s2 = "Γ ⊢ ∃x.φ";
         TextUtil.printFrac(out, 5, s1, s2);

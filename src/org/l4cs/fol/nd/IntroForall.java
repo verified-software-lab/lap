@@ -97,8 +97,6 @@ public class IntroForall extends FOLRule {
         }
 
         Variable y = (Variable) t;
-
-        // [CHANGE] Replaced 'Eigenvariable restriction' with 'Side condition'
         if (!fac.isFreeFor(y, x, body)) {
             return violation(conclusion, premises, fill("Side condition: " + y + " is not free for " + x + " in " + body));
         }
@@ -116,7 +114,6 @@ public class IntroForall extends FOLRule {
 
     @Override
     public String toString() {
-        // [CHANGE] Requested by Advisor: Use subscript style I_∀
         return "I_∀";
     }
 

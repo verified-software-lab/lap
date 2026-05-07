@@ -6,6 +6,13 @@ import static org.l4cs.pl.syntax.Formula.FormulaKind.OR;
 
 import org.l4cs.util.TextUtil;
 
+/**
+ * A binary formula is a formula of the form (arg0 AND arg1), (arg0 OR arg1) or
+ * (arg0 IMPLIES arg1).
+ *
+ * @author Stephen Siegel
+ *
+ */
 public class BinaryFormula extends Formula {
 
 	private Formula arg0;

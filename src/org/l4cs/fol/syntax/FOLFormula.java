@@ -1,5 +1,12 @@
 package org.l4cs.fol.syntax;
 
+/**
+ * The class FOLFormula represents a first-order logic formula. It is an
+ * abstract class, and the various kinds of formulas are represented by concrete
+ * subclasses.
+ * 
+ * @author Yuxin Zhou
+ */
 public abstract class FOLFormula {
 
 	public static enum FormulaKind {

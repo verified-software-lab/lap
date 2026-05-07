@@ -4,6 +4,11 @@ import static org.l4cs.pl.syntax.Formula.FormulaKind.FALSE;
 
 import org.l4cs.util.TextUtil;
 
+/**
+ * The class {@code False} represents the false formula.
+ *
+ * @author Stephen Siegel
+ */
 public class False extends Formula {
 
 	False() {
