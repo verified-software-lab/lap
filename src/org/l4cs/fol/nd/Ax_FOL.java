@@ -7,6 +7,8 @@ import org.l4cs.fol.syntax.FOLFormula;
 import org.l4cs.fol.syntax.FOLFormulaFactory;
 import org.l4cs.util.TextUtil;
 
+// TODO: always format-code (shift-cmd-F) on the final product before committing
+
 /**
  * Inference rule Ax of natural deduction for first-order logic.
  * 
@@ -29,8 +31,8 @@ public class Ax_FOL extends FOLRule {
 	}
 
 	/**
-	 * Checks whether the Ax rule is correctly applied. The conclusion is valid
-	 * if its succedent appears in its antecedent (context).
+	 * Checks whether the Ax rule is correctly applied. The conclusion is valid if
+	 * its succedent appears in its antecedent (context).
 	 * 
 	 * @param conclusion the proposed conclusion sequent
 	 * @param premises   no premises are required for the Ax rule (empty array)
@@ -70,6 +72,7 @@ public class Ax_FOL extends FOLRule {
 	public void printDescription(PrintStream out) {
 		out.println("Rule Ax:");
 		String s1 = "";
+		// TODO: GAMMA here should be ASCII if Unicode encoding is not selected...
 		String s2 = GAMMA + "," + "A " + TextUtil.infers() + " A";
 		TextUtil.printFrac(out, 5, s1, s2);
 		StringBuilder buf = new StringBuilder();
@@ -82,12 +85,12 @@ public class Ax_FOL extends FOLRule {
 	}
 
 	/**
-	 * Determines whether this rule is equal to the given object. Two Ax rules
-	 * are always equal.
+	 * Determines whether this rule is equal to the given object. Two Ax rules are
+	 * always equal.
 	 * 
-	 * @param obj the object to compare with
-	 * @return {@code true} if obj is an Ax_FOL instance, {@code false}
-	 *         otherwise
+	 * @param obj the object to compare with TODO: make Ax_FOL a @link, make obj
+	 *            in @code
+	 * @return {@code true} if obj is an Ax_FOL instance, {@code false} otherwise
 	 */
 	@Override
 	public boolean equals(Object obj) {

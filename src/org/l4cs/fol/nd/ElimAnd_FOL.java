@@ -7,6 +7,8 @@ import org.l4cs.fol.syntax.FOLFormula;
 import org.l4cs.fol.syntax.FOLFormulaFactory;
 import org.l4cs.util.TextUtil;
 
+//TODO: always format-code (shift-cmd-F) on the final product before committing
+
 /**
  * Inference rule eliminate-and in natural deduction for first-order logic.
  * Actually two rules are represented: eliminate-and-1 and eliminate-and-2.
@@ -42,8 +44,8 @@ public class ElimAnd_FOL extends FOLRule {
 	/**
 	 * Checks whether the premises correctly support the conclusion for the
 	 * eliminate-and rule. The premise must have an AND formula as its succedent,
-	 * and the conclusion's succedent must be the specified conjunct (1st or 2nd)
-	 * of that AND formula. Both the premise and conclusion must have the same
+	 * and the conclusion's succedent must be the specified conjunct (1st or 2nd) of
+	 * that AND formula. Both the premise and conclusion must have the same
 	 * antecedent (context).
 	 * 
 	 * @param conclusion the proposed conclusion sequent
@@ -80,6 +82,9 @@ public class ElimAnd_FOL extends FOLRule {
 	 */
 	@Override
 	public String toString() {
+		// TODO: this will always print the Unicode AND. That's not right if
+		// TestUtil.encoding != UNICODE. Contrast with the method TextUtil.infers()
+		// used below. 
 		return "E" + AND + i;
 	}
 
@@ -88,10 +93,12 @@ public class ElimAnd_FOL extends FOLRule {
 	 * including the rule format and an explanation of how it works.
 	 * 
 	 * @param out the PrintStream to which the description is written
+	 * 
 	 */
 	@Override
 	public void printDescription(PrintStream out) {
 		out.println("Rule " + this + " (\"eliminate and " + i + "\"):");
+		// TODO: again, AND is always Unicode, GAMMA is always Unicode, etc.
 		String s1 = GAMMA + " " + TextUtil.infers() + " A" + AND + "B";
 		String s2 = GAMMA + " " + TextUtil.infers() + " " + (i == 1 ? "A" : "B");
 		TextUtil.printFrac(out, 5, s1, s2);
@@ -103,10 +110,13 @@ public class ElimAnd_FOL extends FOLRule {
 	}
 
 	/**
-	 * Determines whether this rule is equal to the given object. Two
-	 * eliminate-and rules are equal if they have the same index i.
+	 * Determines whether this rule is equal to the given object. Two eliminate-and
+	 * rules are equal if they have the same index i.
 	 * 
 	 * @param obj the object to compare with
+	 * TODO: the "obj" below needs to be in {@code ...}.  The ElimAnd_FOL
+	 * should be an {@link} to this class.
+	 *  
 	 * @return {@code true} if obj is an ElimAnd_FOL with the same index,
 	 *         {@code false} otherwise
 	 */
