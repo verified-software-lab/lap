@@ -13,21 +13,6 @@ import org.l4cs.util.TextUtil;
 /**
  * Represents the natural deduction inference rule $\exists$-Elimination (ElimExists) for
  * First-Order Logic (FOL).
- * <p>
- * This rule allows the deduction of a conclusion $C$ from the assumption that
- * a certain property $A(x)$ holds (or rather, from a proof assuming $A(x)$),
- * provided that we know that the property $\exists x. A(x)$ holds in the main context.
- * </p>
- * <h3>Formal Structure:</h3>
- * <p>
- * The rule states that if we know $\exists x. A(x)$ in context $\Gamma$, and we can
- * derive $C$ assuming an instance of $A(x)$ (say, $A(c)$), then $C$ is derivable
- * in the original context $\Gamma$.
- * <pre>
- * $\frac{\Gamma \vdash \exists x. A(x) \quad [\text{Assumption: } A(c)] \vdash C}{\Gamma \vdash C}$
- * </pre>
- * Where $c$ is a fresh variable not free in $\Gamma$ or $C$.
- * </p>
  *
  * @author Yuxin Zhou
  */
@@ -56,9 +41,9 @@ public class ElimExists extends FOLRule {
      * Checks if a given {@link FOLSequent} conclusion correctly follows from
      * two premises using the $\exists$-Elimination rule.
      * <p>
-     * This method validates that:
-     * 1. The conclusion's context matches the initial context of the premises.
-     * 2. The first premise must conclude an existential formula ($\exists x. A(x)$).
+     * This method validates that: <br>
+     * 1. The conclusion's context matches the initial context of the premises. <br>
+     * 2. The first premise must conclude an existential formula ($\exists x. A(x)$). <br>
      * 3. The second premise must contain the assumption $A(c)$ as part of its context.
      * 4. The assumption variable $c$ must be fresh relative to the overall context.
      * 5. The conclusion derived from the second premise must hold in the original context.
@@ -82,10 +67,13 @@ public class ElimExists extends FOLRule {
 		Set<FOLFormula> gamma = conclusion.antecedent();
 		FOLFormula theta = conclusion.succedent();
 
+		// 1. Desired Antecedent Check: Γ must match
 		if (!prem_exists.antecedent().equals(gamma)) {
 			return violation(conclusion, premises,
 					fill("The first premise's antecedent must match the conclusion's antecedent Γ."));
 		}
+
+		// 2. The first Premise must be a Existential Quantifier (∃x φ)
 		if (prem_exists.succedent().kind() != FOLFormula.FormulaKind.EXISTS) {
 			return violation(conclusion, premises, fill("The first premise must be an existential formula."));
 		}
@@ -94,6 +82,7 @@ public class ElimExists extends FOLRule {
 		Variable x = exists_phi.quantifiedV();
 		FOLFormula phi = exists_phi.body();
 
+		// 3. The second premise must derive the same conclusion θ.
 		if (!prem_subproof.succedent().equals(theta)) {
 			return violation(conclusion, premises, fill("The second premise must derive the same conclusion θ."));
 		}
@@ -103,7 +92,6 @@ public class ElimExists extends FOLRule {
 		FOLFormula phi_y = null;
 
 		if (fac.freeVars(phi).contains(x)) {
-
 			for (FOLFormula f : sub_gamma) {
 				if (!gamma.contains(f)) {
 					if (phi_y != null) {
@@ -117,7 +105,6 @@ public class ElimExists extends FOLRule {
 				return violation(conclusion, premises,
 						fill("The antecedent of premise 2 is missing the assumption φ[y/x]."));
 			}
-
 		} else {
 			phi_y = phi;
 			if (!gamma.equals(sub_gamma))

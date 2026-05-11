@@ -10,17 +10,47 @@ import org.l4cs.fol.syntax.Term;
 import org.l4cs.fol.syntax.Variable;
 import org.l4cs.util.TextUtil;
 
+/**
+ * Represents the natural deduction inference rule $\exists$-Introduction (IntroExists) for
+ * First-Order Logic (FOL).
+ * This rule say that if φ holds for a specific term t, then you can conclude ∃x.φ.
+ *
+ * @author Yuxin Zhou
+ */
 public class IntroExists extends FOLRule {
 
+    /**
+     * Constructs the IntroExists rule.
+     *
+     * @param fac The factory used to create {@link FOLFormula} instances.
+     */
     public IntroExists(FOLFormulaFactory fac) {
         super(fac);
     }
 
+    /**
+     * The rule requires two premises: the existence premise and the assumption premise.
+     *
+     * @return The arity of the rule, which is 1.
+     */
     @Override
     public int arity() {
         return 1;
     }
 
+    /**
+     * Checks if the given conclusion can be derived from the premises using the ∃-Introduction rule.
+     * The rule states: From Γ ⊢ φ[t/x], conclude Γ ⊢ ∃x.φ, where t is free for x in φ.
+     * This method performs the following validations:
+     * 1. Antecedent Check: Γ must match
+     * 2. Conclusion must be an existential formula (∃x.φ)
+     * 3. Premise must be a substitution instance φ[t/x] for some t
+     * 4. t must be free for x in φ
+     *
+     * @param conclusion the conclusion sequent
+     * @param premises the premise sequents (should contain exactly one premise)
+     * @return null if the rule application is valid, otherwise a FOLViolation describing the issue
+     */
     @Override
     public FOLViolation check(FOLSequent conclusion, FOLSequent... premises) {
         FOLViolation v = super.check(conclusion, premises);
@@ -31,6 +61,7 @@ public class IntroExists extends FOLRule {
         Set<FOLFormula> gamma_c = conclusion.antecedent();
         Set<FOLFormula> gamma_p = premise.antecedent();
 
+		// 1. Antecedent Check: Γ must match
         if (!gamma_c.equals(gamma_p)) {
             return violation(conclusion, premises,
                     fill("The premise's antecedent, " + gamma_p
@@ -80,7 +111,6 @@ public class IntroExists extends FOLRule {
         String s1 = "Γ ⊢ φ[t/x]";
         String s2 = "Γ ⊢ ∃x.φ";
         TextUtil.printFrac(out, 5, s1, s2);
-        out.println("Rule " + this
-                + " says that if φ holds for a specific term t, then you can conclude ∃x.φ.");
+		out.println("Side condition: t is free for x in φ.");
     }
 }
