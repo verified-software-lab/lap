@@ -7,6 +7,7 @@
 	  </target>
 
 	  <target name="fol-parsegen" depends="check-fol-grammar" unless="fol.parser.uptodate">
+		<delete dir="src/org/l4cs/fol/parse"/>
 	    <mkdir dir="src/org/l4cs/fol/parse"/>
 	    <java classname="javacc"
 	          classpath="lib/javacc-7.0.13.jar" fork="true">
@@ -24,6 +25,7 @@
 	</target>
 
 	<target name="parsegen" depends="check-grammar" unless="parser.uptodate">
+		<delete dir="src/org/l4cs/pl/parse"/>
 		<mkdir dir="src/org/l4cs/pl/parse"/>
 		<java classname="javacc"
 	  classpath="lib/javacc-7.0.13.jar" fork="true">
@@ -83,6 +85,7 @@
 	    <delete dir="bin"/>
 	    <delete dir="junit"/>
 	    <delete dir="src/org/l4cs/pl/parse"/>
-	    <delete dir="src/org/l4cs/fol/parse"/> </target>
+	    <delete dir="src/org/l4cs/fol/parse"/> 
+	</target>
 
 </project>
