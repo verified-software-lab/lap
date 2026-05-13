@@ -14,7 +14,7 @@ import org.l4cs.util.TextUtil;
  * Implements the Universal Elimination (E∀) rule. Rule: From Γ ⊢ ∀x φ, conclude
  * Γ ⊢ φ[t/x].
  * 
- * Represents the natural deduction inference rule $\forall$-Elimination (ElimForall) for
+ * Represents the natural deduction inference rule ∀-Elimination (ElimForall) for
  * First-Order Logic (FOL).
  *
  * @author Yuxin Zhou
@@ -41,17 +41,20 @@ public class ElimForall extends FOLRule {
 	}
 
 	/**
-	 * Checks if the given conclusion can be derived from the premises using the ∀-Elimination rule.
-	 * The rule states: From Γ ⊢ ∀x φ, conclude Γ ⊢ φ[t/x], where t is free for x in φ.
-	 * This method performs the following validations:
-	 * 1. Antecedent Check: Γ must match
-	 * 2. Premise must be a Universal Quantifier (∀x φ)
-	 * 3. Substitution Check: Is conclusion φ[t/x] for some t?
-	 * 4. Capture Check: Is t free for x in φ?
+	 * Checks if the given conclusion can be derived from the premises using the
+	 * ∀-Elimination rule. The rule states: From Γ ⊢ ∀x φ, conclude Γ ⊢ φ[t/x],
+	 * where t is free for x in φ. This method performs the following validations:
+	 * <ol>
+	 * <li>Antecedent Check: Γ must match</li>
+	 * <li>Premise must be a Universal Quantifier (∀x φ)</li>
+	 * <li>Substitution Check: Is conclusion φ[t/x] for some t?</li>
+	 * <li>Capture Check: Is t free for x in φ?</li>
+	 * </ol>
 	 *
 	 * @param conclusion the conclusion sequent
-	 * @param premises the premise sequents (should contain exactly one premise)
-	 * @return null if the rule application is valid, otherwise a FOLViolation describing the issue
+	 * @param premises   the premise sequents (should contain exactly one premise)
+	 * @return null if the rule application is valid, otherwise a FOLViolation
+	 *         describing the issue
 	 */
 	@Override
 	public FOLViolation check(FOLSequent conclusion, FOLSequent... premises) {

@@ -11,50 +11,59 @@ import org.l4cs.fol.syntax.Variable;
 import org.l4cs.util.TextUtil;
 
 /**
- * Represents the natural deduction inference rule $\exists$-Elimination (ElimExists) for
- * First-Order Logic (FOL).
+ * Represents the natural deduction inference rule ∃-Elimination
+ * (ElimExists) for First-Order Logic (FOL).
  *
  * @author Yuxin Zhou
  */
 public class ElimExists extends FOLRule {
 
-    /**
-     * Constructs the ElimExists rule.
-     *
-     * @param fac The factory used to create {@link FOLFormula} instances.
-     */
-    public ElimExists(FOLFormulaFactory fac) {
-        super(fac);
-    }
+	/**
+	 * Constructs the ElimExists rule.
+	 *
+	 * @param fac The factory used to create {@link FOLFormula} instances.
+	 */
+	public ElimExists(FOLFormulaFactory fac) {
+		super(fac);
+	}
 
-    /**
-     * The rule requires two premises: the existence premise and the assumption premise.
-     *
-     * @return The arity of the rule, which is 2.
-     */
-    @Override
-    public int arity() {
-        return 2;
-    }
+	/**
+	 * The rule requires two premises: the existence premise and the assumption
+	 * premise.
+	 *
+	 * @return The arity of the rule, which is 2.
+	 */
+	@Override
+	public int arity() {
+		return 2;
+	}
 
-    /**
-     * Checks if a given {@link FOLSequent} conclusion correctly follows from
-     * two premises using the $\exists$-Elimination rule.
-     * <p>
-     * This method validates that: <br>
-     * 1. The conclusion's context matches the initial context of the premises. <br>
-     * 2. The first premise must conclude an existential formula ($\exists x. A(x)$). <br>
-     * 3. The second premise must contain the assumption $A(c)$ as part of its context.
-     * 4. The assumption variable $c$ must be fresh relative to the overall context.
-     * 5. The conclusion derived from the second premise must hold in the original context.
-     * </p>
-     *
-     * @param conclusion The final sequent being checked.
-     * @param premises The two premises required by the rule:
-     *                 {@code premises[0]}: Must conclude the existential statement.
-     *                 {@code premises[1]}: The sequent derived under the assumption instance.
-     * @return {@code null} if the rule applies correctly, or a {@link FOLViolation} detailing the inconsistency.
-     */
+	/**
+	 * Checks if a given {@link FOLSequent} conclusion correctly follows from two
+	 * premises using the ∃-Elimination rule.
+	 * <p>
+	 * This method validates that:
+	 * <ol>
+	 * <li>The conclusion's context matches the initial context of the premises.
+	 * </li>
+	 * <li>The first premise must conclude an existential formula ∃ x. A(x)).</li>
+	 * <li>The second premise must contain the assumption A(c) as part of its
+	 * context.</li>
+	 * <li>The assumption variable c must be fresh relative to the overall
+	 * context.</li>
+	 * <li>The conclusion derived from the second premise must hold in the original
+	 * context.</li>
+	 * </ol>
+	 * </p>
+	 *
+	 * @param conclusion The final sequent being checked.
+	 * @param premises   The two premises required by the rule: {@code premises[0]}:
+	 *                   Must conclude the existential statement.
+	 *                   {@code premises[1]}: The sequent derived under the
+	 *                   assumption instance.
+	 * @return {@code null} if the rule applies correctly, or a {@link FOLViolation}
+	 *         detailing the inconsistency.
+	 */
 	@Override
 	public FOLViolation check(FOLSequent conclusion, FOLSequent... premises) {
 		FOLViolation v = super.check(conclusion, premises);
