@@ -31,7 +31,7 @@ public class IntroNot_FOL extends FOLRule {
 		FOLFormula f = s0.succedent(), not = conclusion.succedent();
 		if (!fac.isFalse(f))
 			return violation(conclusion, premises,
-					fill("The premise's succedent should be " + BOT + ", but instead was " + f + "."));
+					fill("The premise's succedent should be " + TextUtil.bot() + ", but instead was " + f + "."));
 		if (!fac.isNot(not))
 			return violation(conclusion, premises, fill("The conclusion's succedent, " + not
 					+ ", should be a NOT formula, but instead has kind " + not.kind() + "."));
@@ -46,20 +46,20 @@ public class IntroNot_FOL extends FOLRule {
 
 	@Override
 	public String toString() {
-		return "I" + NOT;
+		return "I" + TextUtil.not();
 	}
 
 	@Override
 	public void printDescription(PrintStream out) {
 		out.println("Rule " + this + " (\"introduce not\"):");
-		String s1 = GAMMA + "," + "A " + TextUtil.infers() + " " + BOT;
-		String s2 = GAMMA + " " + TextUtil.infers() + NOT + "A";
+		String s1 = GAMMA + "," + "A " + TextUtil.infers() + " " + TextUtil.bot();
+		String s2 = GAMMA + " " + TextUtil.infers() + TextUtil.not() + "A";
 		TextUtil.printFrac(out, 5, s1, s2);
 		StringBuilder buf = new StringBuilder();
 		buf.append("Rule " + this + " says that if you start in some context ");
 		buf.append(GAMMA + ", and assume " + "A, ");
-		buf.append("and from there you derive " + BOT + ", ");
-		buf.append("then it must be the case that " + NOT + "A holds in ");
+		buf.append("and from there you derive " + TextUtil.bot() + ", ");
+		buf.append("then it must be the case that " + TextUtil.not() + "A holds in ");
 		buf.append(GAMMA + ". The rule has one premise.");
 		out.print(TextUtil.wrap(buf));
 	}

@@ -55,7 +55,7 @@ public class QuantifiedFormula extends FOLFormula {
 		// Calculate hash based on the three components that define its identity:
 		// kind (from superclass), quantifiedV, and body.
 		// Using Objects.hash for safe, standard practice.
-		return Objects.hash(kind(), quantifiedV, body);//
+		return Objects.hash(kind(), quantifiedV, body);
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class QuantifiedFormula extends FOLFormula {
 
 	@Override
 	public String toString() {
-		String quantifierSymbol = (kind() == EXISTS) ? TextUtil.EXISTS : TextUtil.FORALL;
+		String quantifierSymbol = (kind() == EXISTS) ? TextUtil.exists() : TextUtil.forall();
 
 		String b = body.toString();
 		// Ensure inner formulas (especially binary ones) are parenthesized for clarity

@@ -48,20 +48,20 @@ public class IntroImplies extends Rule {
 
 	@Override
 	public String toString() {
-		return "I" + IMPLIES;
+		return "I" + TextUtil.implies();
 	}
 
 	@Override
 	public void printDescription(PrintStream out) {
 		out.println("Rule " + this + " (\"introduce implies\"):");
 		String s1 = GAMMA + "," + "A " + TextUtil.infers() + " B";
-		String s2 = GAMMA + " " + TextUtil.infers() + " A" + IMPLIES + "B";
+		String s2 = GAMMA + " " + TextUtil.infers() + " A" + TextUtil.implies() + "B";
 		TextUtil.printFrac(out, 5, s1, s2);
 		StringBuilder buf = new StringBuilder();
 		buf.append("Rule " + this + " says that if you start in some context ");
 		buf.append(GAMMA + ", and assume A, ");
 		buf.append("and from there you derive B, ");
-		buf.append("then it must be the case that A" + IMPLIES + "B holds in ");
+		buf.append("then it must be the case that A" + TextUtil.implies()  + "B holds in ");
 		buf.append(GAMMA + ". The rule has one premise.");
 		out.print(TextUtil.wrap(buf));
 	}

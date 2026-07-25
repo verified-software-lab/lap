@@ -5,18 +5,49 @@ import java.io.PrintStream;
 import org.l4cs.cli.CommandLine.View;
 import org.l4cs.fol.nd.FOLDerivation;
 import org.l4cs.fol.nd.FOLViolation;
+import org.l4cs.util.Block;
 
-public class Check_FOL {
+public class Check_FOL extends Command {
 
 	private static PrintStream out = System.out;
 
-	public static void execute(CommandLine cl) {
+	public Check_FOL(CommandLine cl) {
+		super(cl);
+	}
+
+	@Override
+	public String name() {
+		return "lap check --lang=fol";
+	}
+
+	@Override
+	public String shortDescription() {
+		return "check a natural deduction derivation (FOL)";
+	}
+
+	@Override
+	public String synopsis() {
+		return bf("lap check --lang=fol") + " [ " + ul("options") + " ] [ " + ul("file") + " ]";
+	}
+
+	@Override
+	public Block description() {
+		Block block1 = par("Checks a natural deduction derivation (FOL). ",
+				"By default, the derivation is read from the file named ", ul("file"),
+				".  However, using options below, ", "this can be changed to read from stdin or to specify the ",
+				"derivation on the command line.  Output is sent to stdout.");
+		Block block2 = sub(bf("Options:"), seq(optEncoding(), optHighlight(), optIn(), optLang(), optNumber(),
+				optPlain(), optVerbose(" This option implies " + bf("--view=all") + "."), optView()));
+		Block block3 = par("For derivation syntax, type ", bf("lap help derivations --lang=fol"), ".");
+		return seq(block1, block2, block3);
+	}
+
+	@Override
+	public void execute() {
 		if (cl.getNumInputs() != 1)
 			cl.clErr("expected one derivation specified but saw " + cl.getNumInputs());
-		// Derivation must be read
 		try {
 			FOLDerivation der = cl.getFOLDerivationInput(0);
-			// NONE, LINEAR, TREE, HIERARCHY, FITCH, TUPLE, ALL
 			out.println("true");
 			if (cl.view == View.NONE) {
 			}
@@ -29,6 +60,10 @@ public class Check_FOL {
 				out.println();
 				der.printLinear(out);
 			}
+			if (cl.view == View.TREE || cl.view == View.ALL) {
+				out.println();
+				der.printTree(out, cl.number);
+			}
 			if (cl.view == View.HIERARCHY || cl.view == View.ALL) {
 				out.println();
 				der.printHierarchy(out, cl.number);
@@ -37,10 +72,6 @@ public class Check_FOL {
 				out.println();
 				der.printFitch(out);
 			}
-			if (cl.view == View.TREE || cl.view == View.ALL) {
-				out.println();
-				der.printTree(out, cl.number);
-			}
 		} catch (FOLViolation v) {
 			out.println("false");
 			if (cl.verbose) {
@@ -48,27 +79,4 @@ public class Check_FOL {
 			}
 		}
 	}
-
-	public static void describe(CommandLine cl) {
-		out.println("Usage: lap check <options> [<filename>]");
-		out.println("Description:");
-		out.println("  Checks a natural deduction derivation. ");
-		out.println("  By default, the derivation is read from a");
-		out.println("  file, specified by <filename>.  However, using options below, ");
-		out.println("  this can be changed to read from stdin or to specify the ");
-		out.println("  derivation on the command line.  Output is sent to stdout.");
-		out.println("Options:");
-		out.println("  -i --in : read formula from stdin");
-		out.println("  -f <string>");
-		out.println("          : read the derivation from <string> instead of a file");
-		out.println("  -v      : verbose output");
-		out.println("  -plain  : restrict output to plain text");
-		out.println("  -lang (pl|fol)  [default: pl]");
-		out.println("          : language (Propositional Logic or First Order Logic)");
-		out.println("  -view (none|linear|tree|hierarchy|fitch|tuple|all)  [default: none]");
-		out.println("          : format(s) to print derivation");
-		out.println("For FOL formula syntax, type \"lap help -lang fol formulas\".");
-		out.println("For FOL derivation syntax, type \"lap help -lang fol derivations\".");
-	}
-
 }

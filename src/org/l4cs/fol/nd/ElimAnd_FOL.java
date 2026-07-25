@@ -82,10 +82,7 @@ public class ElimAnd_FOL extends FOLRule {
 	 */
 	@Override
 	public String toString() {
-		// TODO: this will always print the Unicode AND. That's not right if
-		// TestUtil.encoding != UNICODE. Contrast with the method TextUtil.infers()
-		// used below. 
-		return "E" + AND + i;
+		return "E" + TextUtil.and() + i;
 	}
 
 	/**
@@ -99,11 +96,11 @@ public class ElimAnd_FOL extends FOLRule {
 	public void printDescription(PrintStream out) {
 		out.println("Rule " + this + " (\"eliminate and " + i + "\"):");
 		// TODO: again, AND is always Unicode, GAMMA is always Unicode, etc.
-		String s1 = GAMMA + " " + TextUtil.infers() + " A" + AND + "B";
+		String s1 = GAMMA + " " + TextUtil.infers() + " A" + TextUtil.and() + "B";
 		String s2 = GAMMA + " " + TextUtil.infers() + " " + (i == 1 ? "A" : "B");
 		TextUtil.printFrac(out, 5, s1, s2);
 		StringBuilder buf = new StringBuilder();
-		buf.append("Rule " + this + " says that if you can derive A" + AND + "B, then you can conclude "
+		buf.append("Rule " + this + " says that if you can derive A" + TextUtil.and() + "B, then you can conclude "
 				+ (i == 1 ? "A" : "B") + ". " + "The premise and the conclusion use the same context " + GAMMA + ". ");
 		buf.append("This rule has one premise.");
 		out.print(fill(buf));

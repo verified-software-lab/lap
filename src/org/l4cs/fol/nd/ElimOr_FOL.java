@@ -63,18 +63,18 @@ public class ElimOr_FOL extends FOLRule {
 
 	@Override
 	public String toString() {
-		return "E" + OR;
+		return "E" + TextUtil.or();
 	}
 
 	@Override
 	public void printDescription(PrintStream out) {
 		out.println("Rule " + this + " (\"eliminate or\"):");
-		String s1 = GAMMA + " " + TextUtil.infers() + " A" + OR + "B     " + GAMMA + ",A " + TextUtil.infers()
+		String s1 = GAMMA + " " + TextUtil.infers() + " A" + TextUtil.or() + "B     " + GAMMA + ",A " + TextUtil.infers()
 				+ " C     " + GAMMA + ",B " + TextUtil.infers() + " C";
 		String s2 = GAMMA + " " + TextUtil.infers() + " C";
 		TextUtil.printFrac(out, 5, s1, s2);
 		StringBuilder buf = new StringBuilder();
-		buf.append("Rule " + this + " says that if in some context " + GAMMA + ": (1) you can derive A" + OR + "B, "
+		buf.append("Rule " + this + " says that if in some context " + GAMMA + ": (1) you can derive A" + TextUtil.or() + "B, "
 				+ "(2) if you assume A, you can derive C, and " + "(3) if you assume B, you can derive C, "
 				+ "then you can conclude that C holds in " + GAMMA + ". ");
 		buf.append("This rule has three premises.");

@@ -159,13 +159,13 @@ public class Help extends Command {
 			man(out);
 			break;
 		case "cnf":
-			Cnf.describe(cl);
+			new Cnf(cl).man(out);
 			break;
 		case "dnf":
 			Dnf.describe(cl);
 			break;
 		case "nnf":
-			Nnf.describe(cl);
+			new Nnf(cl).man(out);
 			break;
 		case "equiv":
 			Equiv.describe(cl);
@@ -206,7 +206,7 @@ public class Help extends Command {
 			man(out);
 			break;
 		case "check":
-			Check_FOL.describe(cl);
+			new Check_FOL(cl).man(out); // this is the right way
 			break;
 		case "formulas":
 			formulas_FOL();

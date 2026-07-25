@@ -57,13 +57,13 @@ public class BinaryFormula extends Formula {
 			result = arg0.toString();
 		switch (kind()) {
 			case AND :
-				result += TextUtil.AND;
+				result += TextUtil.and();
 				break;
 			case OR :
-				result += TextUtil.OR;
+				result += TextUtil.or();
 				break;
 			case IMPLIES :
-				result += TextUtil.IMPLIES;
+				result += TextUtil.implies();
 				break;
 			default :
 				assert false;

@@ -8,11 +8,13 @@ import org.l4cs.fol.syntax.FOLFormulaFactory;
 import org.l4cs.util.TextUtil;
 
 /**
- * Represents the natural deduction inference rule $\text{AndI}$ (Introduce And) for
- * First-Order Logic (FOL).
+ * Represents the natural deduction inference rule $\text{AndI}$ (Introduce And)
+ * for First-Order Logic (FOL).
  * <p>
- * This rule states that if a context $\Gamma$ entails $A$, and $\Gamma$ also entails $B$,
- * then $\Gamma$ entails the conjunction of $A$ and $B$, written as $A \land B$.
+ * This rule states that if a context $\Gamma$ entails $A$, and $\Gamma$ also
+ * entails $B$, then $\Gamma$ entails the conjunction of $A$ and $B$, written as
+ * $A \land B$.
+ * 
  * <pre>
  * $\frac{\Gamma \vdash A \quad \Gamma \vdash B}{\Gamma \vdash A \land B}$
  * </pre>
@@ -42,19 +44,19 @@ public class IntroAnd_FOL extends FOLRule {
 	}
 
 	/**
-	 * Checks if a given {@link FOLSequent} conclusion correctly follows from
-	 * two premises using the Intro And rule.
+	 * Checks if a given {@link FOLSequent} conclusion correctly follows from two
+	 * premises using the Intro And rule.
 	 * <p>
-	 * This method validates three conditions:
-	 * 1. The antecedents (contexts) of the conclusion and both premises must be equal.
-	 * 2. The succedent (conclusion) of the sequence must be the conjunction of
-	 *    the succedents of the two premises.
+	 * This method validates three conditions: 1. The antecedents (contexts) of the
+	 * conclusion and both premises must be equal. 2. The succedent (conclusion) of
+	 * the sequence must be the conjunction of the succedents of the two premises.
 	 * 3. Returns {@code null} if the premises correctly imply the conclusion,
-	 *    otherwise returns a {@link FOLViolation} detailing the inconsistency.
+	 * otherwise returns a {@link FOLViolation} detailing the inconsistency.
 	 *
 	 * @param conclusion The sequent being checked (the resulting conclusion).
-	 * @param premises The two premises required by the rule.
-	 * @return {@code null} if the rule applies correctly, or a {@link FOLViolation} otherwise.
+	 * @param premises   The two premises required by the rule.
+	 * @return {@code null} if the rule applies correctly, or a {@link FOLViolation}
+	 *         otherwise.
 	 */
 	@Override
 	public FOLViolation check(FOLSequent conclusion, FOLSequent... premises) {
@@ -84,13 +86,14 @@ public class IntroAnd_FOL extends FOLRule {
 	 */
 	@Override
 	public String toString() {
-		return "I" + AND;
+		return "I" + TextUtil.and();
 	}
 
 	/**
 	 * Prints the detailed description of the rule to the given output stream.
 	 * <p>
-	 * It illustrates the rule's structure and functionality in natural deduction format.
+	 * It illustrates the rule's structure and functionality in natural deduction
+	 * format.
 	 *
 	 * @param out The {@link PrintStream} to write the description to.
 	 */
@@ -98,11 +101,11 @@ public class IntroAnd_FOL extends FOLRule {
 	public void printDescription(PrintStream out) {
 		out.println("Rule " + this + " (\"introduce and\"):");
 		String s1 = GAMMA + " " + TextUtil.infers() + " A     " + GAMMA + " " + TextUtil.infers() + " B";
-		String s2 = GAMMA + " " + TextUtil.infers() + " A" + AND + "B";
+		String s2 = GAMMA + " " + TextUtil.infers() + " A" + TextUtil.and() + "B";
 		TextUtil.printFrac(out, 5, s1, s2);
 		StringBuilder buf = new StringBuilder();
-		buf.append("Rule " + this + " says that if you know A, and " + "you know B, then you can conclude A" + AND
-				+ "B. " + "All premises and the conclusion use the same context " + GAMMA + ". ");
+		buf.append("Rule " + this + " says that if you know A, and " + "you know B, then you can conclude A"
+				+ TextUtil.and() + "B. " + "All premises and the conclusion use the same context " + GAMMA + ". ");
 		buf.append("This rule has two premises.");
 		out.print(TextUtil.wrap(buf));
 	}
@@ -129,4 +132,3 @@ public class IntroAnd_FOL extends FOLRule {
 	}
 
 }
-

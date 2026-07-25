@@ -1,5 +1,8 @@
 package org.l4cs.util;
 
+import static org.l4cs.util.TextUtil.Encoding.ASCII;
+import static org.l4cs.util.TextUtil.Encoding.UNICODE;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
@@ -97,7 +100,7 @@ public class TextUtil {
 		String term = System.getenv("TERM");
 		boolean supportsAnsi = term != null
 				&& (term.contains("color") || term.contains("xterm") || term.contains("ansi"));
-		encoding = supportsUnicode ? Encoding.UNICODE : Encoding.ASCII;
+		encoding = supportsUnicode ? UNICODE : ASCII;
 		highlighting = supportsAnsi ? Highlight.ANSI : Highlight.NONE;
 		// try to get the Terminal width...
 		ProcessBuilder pb = new ProcessBuilder("sh", "-c", "tput cols < /dev/tty");
@@ -645,7 +648,7 @@ public class TextUtil {
 	}
 
 	public static String getCircled(int n) {
-		if (encoding != Encoding.UNICODE)
+		if (encoding != UNICODE)
 			return "(" + n + ")";
 		if (n >= 1 && n <= 20) // 2460-2473
 			return String.valueOf((char) ('\u245F' + n));
@@ -657,15 +660,55 @@ public class TextUtil {
 	}
 
 	public static String getVLine() {
-		return encoding == Encoding.UNICODE ? "\u2502 " : "| ";
+		return encoding == UNICODE ? "\u2502 " : "| ";
 	}
 
 	public static String getHLine() {
-		return encoding == Encoding.UNICODE ? "\u2500" : "-";
+		return encoding == UNICODE ? "\u2500" : "-";
 	}
 
 	public static String getTBranch() {
-		return encoding == Encoding.UNICODE ? "\u251C\u2500\u2500\u2500" : "|---";
+		return encoding == UNICODE ? "\u251C\u2500\u2500\u2500" : "|---";
+	}
+
+	public static String and() {
+		return encoding == ASCII ? "&" : AND;
+	}
+	
+	public static String or() {
+		return encoding == ASCII ? "|" : OR;
+	}
+	
+	public static String not() {
+		return encoding == ASCII ? "!" : NOT;
+	}
+	
+	public static String implies() {
+		return encoding == ASCII ? "->" : IMPLIES;
+	}
+	
+	public static String iff() {
+		return encoding == ASCII ? "<->" : IFF;
+	}
+	
+	public static String forall() {
+		return encoding == ASCII ? "forall" : FORALL;
+	}
+	
+	public static String exists() {
+		return encoding == ASCII ? "exists" : EXISTS;
+	}
+	
+	public static String top() {
+		return encoding == ASCII ? "true" : TOP;
+	}
+	
+	public static String bot() {
+		return encoding == ASCII ? "false" : BOT;
+	}
+	
+	public static String equiv() {
+		return encoding == ASCII ? "=" : "\u2261";
 	}
 
 }

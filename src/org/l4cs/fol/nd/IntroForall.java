@@ -119,7 +119,7 @@ public class IntroForall extends FOLRule {
 
 	@Override
 	public String toString() {
-		return "I_∀";
+		return "I"+TextUtil.forall();
 	}
 
 	@Override

@@ -32,7 +32,7 @@ public class RAA_FOL extends FOLRule {
 		FOLFormula f = premise.succedent(), a = conclusion.succedent();
 		if (!fac.isFalse(f))
 			return violation(conclusion, premises,
-					fill("The premise's succedent should be " + BOT + ", but instead was " + f + "."));
+					fill("The premise's succedent should be " + TextUtil.bot() + ", but instead was " + f + "."));
 		if (!isUnionWith(premise.antecedent(), conclusion.antecedent(), fac.not(a)))
 			return violation(conclusion, premises,
 					fill("The premise's antecedent must be the union of the " + "conclusion's antecedent, "
@@ -49,13 +49,13 @@ public class RAA_FOL extends FOLRule {
 	@Override
 	public void printDescription(PrintStream out) {
 		out.println("Rule RAA (\"reductio ad absurdum\"):");
-		String s1 = GAMMA + "," + NOT + "A " + TextUtil.infers() + " " + BOT;
+		String s1 = GAMMA + "," + TextUtil.not() + "A " + TextUtil.infers() + " " + TextUtil.bot();
 		String s2 = GAMMA + " " + TextUtil.infers() + " A";
 		TextUtil.printFrac(out, 5, s1, s2);
 		StringBuilder buf = new StringBuilder();
 		buf.append("Rule RAA says that if you start in some context ");
-		buf.append(GAMMA + ", and assume " + NOT + "A, ");
-		buf.append("and from there you derive " + BOT + ", ");
+		buf.append(GAMMA + ", and assume " + TextUtil.not() + "A, ");
+		buf.append("and from there you derive " + TextUtil.bot() + ", ");
 		buf.append("then it must be the case that A holds in ");
 		buf.append(GAMMA + ". The rule has one premise.");
 		out.print(TextUtil.wrap(buf));

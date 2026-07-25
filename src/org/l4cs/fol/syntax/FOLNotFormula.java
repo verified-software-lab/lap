@@ -25,7 +25,7 @@ public class FOLNotFormula extends FOLFormula {
 
 	@Override
 	public int hashCode() {
-		return NOT.hashCode() + arg.hashCode();//wait
+		return NOT.hashCode() + arg.hashCode();
 	}
 
 	@Override
@@ -39,12 +39,12 @@ public class FOLNotFormula extends FOLFormula {
 	@Override
 	public String toString() {
 		if (arg instanceof FOLFalse)
-			return TextUtil.TOP; // "true"
-		String result = TextUtil.NOT;
+			return TextUtil.top(); // "true"
+		String result = TextUtil.not();
 		if (arg instanceof FOLBinaryFormula)
 			result += "(" + arg + ")";
 		else
-			result += arg;//no need toSting
+			result += arg;
 		return result;
 	}
 

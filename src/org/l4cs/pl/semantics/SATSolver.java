@@ -65,7 +65,6 @@ public abstract class SATSolver {
 	 */
 	public Model valid(Formula f) {
 		return sat(fac.not(f));
-
 	}
 
 	/**

@@ -51,18 +51,18 @@ public class FOLBinaryFormula extends FOLFormula {
 	public String toString() {
 		String result;
 		if (arg0 instanceof FOLBinaryFormula)
-			result = "(" + arg0 + ")";// arg0.toString();？？？？？
+			result = "(" + arg0 + ")";
 		else
 			result = arg0.toString();
-		switch (kind()) {//
+		switch (kind()) {
 		case AND:
-			result += TextUtil.AND;
+			result += TextUtil.and();
 			break;
 		case OR:
-			result += TextUtil.OR;
+			result += TextUtil.or();
 			break;
 		case IMPLIES:
-			result += TextUtil.IMPLIES;
+			result += TextUtil.implies();
 			break;
 		default:
 			assert false;//

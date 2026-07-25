@@ -17,7 +17,7 @@ public class FOLFalse extends FOLFormula {
 
 	@Override
 	public String toString() {
-		return TextUtil.BOT;
+		return TextUtil.bot();
 	}
 
 	@Override

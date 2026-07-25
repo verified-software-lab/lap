@@ -39,8 +39,8 @@ public class NotFormula extends Formula {
 	@Override
 	public String toString() {
 		if (arg instanceof False)
-			return TextUtil.TOP; // "true"
-		String result = TextUtil.NOT;
+			return TextUtil.top(); // "true"
+		String result = TextUtil.not();
 		if (arg instanceof BinaryFormula)
 			result += "(" + arg + ")";
 		else

@@ -39,13 +39,6 @@ public abstract class Rule {
 	 */
 
 	final static String GAMMA = TextUtil.GAMMA;
-	// final static String INFERS = TextUtil.INFERS;
-	final static String AND = TextUtil.AND;
-	final static String OR = TextUtil.OR;
-	final static String IMPLIES = TextUtil.IMPLIES;
-	final static String NOT = TextUtil.NOT;
-	final static String TOP = TextUtil.TOP;
-	final static String BOT = TextUtil.BOT;
 	final static int terminalWidth = TextUtil.terminalWidth();
 
 	/**

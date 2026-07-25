@@ -102,7 +102,7 @@ public class IntroExists extends FOLRule {
 
 	@Override
 	public String toString() {
-		return "∃_I";
+		return "I" + TextUtil.exists();
 	}
 
 	@Override

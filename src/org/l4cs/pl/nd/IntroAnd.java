@@ -46,18 +46,18 @@ public class IntroAnd extends Rule {
 
 	@Override
 	public String toString() {
-		return "I" + AND;
+		return "I" + TextUtil.and();
 	}
 
 	@Override
 	public void printDescription(PrintStream out) {
 		out.println("Rule " + this + " (\"introduce and\"):");
 		String s1 = GAMMA + " " + TextUtil.infers() + " A     " + GAMMA + " " + TextUtil.infers() + " B";
-		String s2 = GAMMA + " " + TextUtil.infers() + " A" + AND + "B";
+		String s2 = GAMMA + " " + TextUtil.infers() + " A" + TextUtil.and() + "B";
 		TextUtil.printFrac(out, 5, s1, s2);
 		StringBuilder buf = new StringBuilder();
-		buf.append("Rule " + this + " says that if you know A, and " + "you know B, then you can conclude A" + AND
-				+ "B. " + "All premises and the conclusion use the same context " + GAMMA + ". ");
+		buf.append("Rule " + this + " says that if you know A, and " + "you know B, then you can conclude A"
+				+ TextUtil.and() + "B. " + "All premises and the conclusion use the same context " + GAMMA + ". ");
 		buf.append("This rule has two premises.");
 		out.print(TextUtil.wrap(buf));
 	}

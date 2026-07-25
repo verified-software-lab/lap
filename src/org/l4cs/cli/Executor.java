@@ -8,13 +8,13 @@ public class Executor {
 			new Help(cl).execute();
 			break;
 		case "cnf":
-			Cnf.execute(cl);
+			new Cnf(cl).execute();
 			break;
 		case "dnf":
 			Dnf.execute(cl);
 			break;
 		case "nnf":
-			Nnf.execute(cl);
+			new Nnf(cl).execute();
 			break;
 		case "equiv":
 			Equiv.execute(cl);
@@ -45,7 +45,7 @@ public class Executor {
 			new Help(cl).execute();
 			break;
 		case "check":
-			Check_FOL.execute(cl);
+			new Check_FOL(cl).execute();
 			break;
 		default:
 			cl.clErr("unknown command: " + cl.command);

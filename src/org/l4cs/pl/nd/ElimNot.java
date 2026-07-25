@@ -47,18 +47,19 @@ public class ElimNot extends Rule {
 
 	@Override
 	public String toString() {
-		return "E" + NOT;
+		return "E" + TextUtil.not();
 	}
 
 	@Override
 	public void printDescription(PrintStream out) {
 		out.println("Rule " + this + " (\"eliminate not\"):");
-		String s1 = GAMMA + " " + TextUtil.infers() + " A     " + GAMMA + " " + TextUtil.infers() + " " + NOT + "A";
+		String s1 = GAMMA + " " + TextUtil.infers() + " A     " + GAMMA + " " + TextUtil.infers() + " " + TextUtil.not()
+				+ "A";
 		String s2 = GAMMA + " " + TextUtil.infers() + " B";
 		TextUtil.printFrac(out, 5, s1, s2);
 		StringBuilder buf = new StringBuilder();
-		buf.append("Rule " + this + " says that if in some context " + GAMMA + ", you can dervive both A and " + NOT
-				+ "A, then you can derive anything in " + GAMMA + ".");
+		buf.append("Rule " + this + " says that if in some context " + GAMMA + ", you can dervive both A and "
+				+ TextUtil.not() + "A, then you can derive anything in " + GAMMA + ".");
 		out.print(TextUtil.wrap(buf));
 	}
 
