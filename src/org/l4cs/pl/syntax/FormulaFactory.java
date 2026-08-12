@@ -26,7 +26,7 @@ public class FormulaFactory {
 	/**
 	 * Where the verbose output will go.
 	 */
-	protected final static PrintStream out = System.out;
+	protected final static PrintStream out = System.out, err = System.err;
 
 	// Fields...
 
@@ -340,24 +340,24 @@ public class FormulaFactory {
 	public Formula nnfv(String pre, Formula a) {
 		Formula result;
 		String newpre = pre + "  | ";
-		out.print(pre + "nnf(" + a + ") = ");
+		err.print(pre + "nnf(" + a + ") = ");
 		switch (a.kind()) {
 		case FALSE:
 		case PROP:
-			out.println(a);
+			err.println(a);
 			return a;
 		case AND: {
-			out.println("nnf(" + arg0(a) + ") " + TextUtil.and() + " nnf(" + arg1(a) + ")");
+			err.println("nnf(" + arg0(a) + ") " + TextUtil.and() + " nnf(" + arg1(a) + ")");
 			result = and(nnfv(newpre, arg0(a)), nnfv(newpre, arg1(a)));
 			break;
 		}
 		case OR: {
-			out.println("nnf(" + arg0(a) + ") " + TextUtil.or() + " nnf(" + arg1(a) + ")");
+			err.println("nnf(" + arg0(a) + ") " + TextUtil.or() + " nnf(" + arg1(a) + ")");
 			result = or(nnfv(pre + "  | ", arg0(a)), nnfv(newpre, arg1(a)));
 			break;
 		}
 		case IMPLIES: {
-			out.println("nnf(" + not(arg0(a)) + ") " + TextUtil.or() + " nnf(" + arg1(a) + ")");
+			err.println("nnf(" + not(arg0(a)) + ") " + TextUtil.or() + " nnf(" + arg1(a) + ")");
 			result = and(nnfv(pre + "  | ", not(arg0(a))), nnfv(newpre, arg1(a)));
 			break;
 		}
@@ -366,25 +366,25 @@ public class FormulaFactory {
 			switch (b.kind()) {
 			case FALSE:
 			case PROP:
-				out.println(a);
+				err.println(a);
 				return a;
 			case NOT: {
-				out.println("nnf(" + arg(b) + ")");
+				err.println("nnf(" + arg(b) + ")");
 				result = nnfv(newpre, arg(b));
 				break;
 			}
 			case AND: {
-				out.println("nnf(" + not(arg0(b)) + ") " + TextUtil.or() + " nnf(" + not(arg1(b)) + ")");
+				err.println("nnf(" + not(arg0(b)) + ") " + TextUtil.or() + " nnf(" + not(arg1(b)) + ")");
 				result = or(nnfv(newpre, not(arg0(b))), nnfv(newpre, not(arg1(b))));
 				break;
 			}
 			case OR: {
-				out.println("nnf(" + not(arg0(b)) + ") " + TextUtil.and() + " nnf(" + not(arg1(b)) + ")");
+				err.println("nnf(" + not(arg0(b)) + ") " + TextUtil.and() + " nnf(" + not(arg1(b)) + ")");
 				result = and(nnfv(newpre, not(arg0(b))), nnfv(newpre, not(arg1(b))));
 				break;
 			}
 			case IMPLIES: {
-				out.println("nnf(" + arg0(b) + ") " + TextUtil.and() + " nnf(" + not(arg1(b)) + ")");
+				err.println("nnf(" + arg0(b) + ") " + TextUtil.and() + " nnf(" + not(arg1(b)) + ")");
 				result = and(nnfv(newpre, arg0(b)), nnfv(newpre, not(arg1(b))));
 				break;
 			}
@@ -395,7 +395,7 @@ public class FormulaFactory {
 		default:
 			throw new RuntimeException("unreachable");
 		}
-		out.println(pre + "= " + result);
+		err.println(pre + "= " + result);
 		return result;
 	}
 
